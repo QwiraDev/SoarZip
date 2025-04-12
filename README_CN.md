@@ -1,5 +1,9 @@
 # Soar Zip - 轻量级压缩工具
 
+[English Version](README.md) 
+
+---
+
 基于Tauri框架构建的轻量级文件压缩/解压工具，提供现代化的原生桌面体验。
 
 ## 项目概述
@@ -37,8 +41,4 @@ pnpm tauri build
 
 ## 许可证
 
-本项目采用GNU GPLv3许可证。
-
----
-
-[English Version](README.md) 
+本项目采用[GNU LGPL-3.0 许可证](LICENSE)。

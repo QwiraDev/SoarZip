@@ -38,5 +38,5 @@ pnpm tauri build
 
 ## License
 
-This project is licensed under the GNU GPLv3 License.
+This project is licensed under the [GNU LGPL-3.0 License](LICENSE).
 
