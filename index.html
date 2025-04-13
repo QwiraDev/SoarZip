@@ -238,44 +238,63 @@
 
         <!-- 文件浏览器 -->
         <div class="file-explorer">
-          <div class="file-list-header">
-            <div class="file-list-column">名称</div>
-            <div class="file-list-column">修改日期</div>
-            <div class="file-list-column">类型</div>
-            <div class="file-list-column">大小</div>
-          </div>
-          <div class="file-list-body">
-            <!-- 示例文件 -->
-            <div class="file-item">
-              <div class="file-column file-name">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                </svg>
-                <span>example.txt</span>
-              </div>
-              <div class="file-column">2023-06-21 14:30</div>
-              <div class="file-column">文本文档</div>
-              <div class="file-column">2.5 KB</div>
+          <!-- 默认主页 -->
+          <div id="home-page" class="home-container">
+            <div class="home-header">
+              <h1>欢迎使用 Soar Zip</h1>
+              <p>高效、安全的压缩文件管理工具</p>
             </div>
-            <div class="file-item">
-              <div class="file-column file-name">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <span>images</span>
+            
+            <div class="home-actions">
+              <div class="action-group">
+                <h2>开始使用</h2>
+                <div class="action-buttons">
+                  <button class="home-action-btn" id="open-archive-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 8h14M5 8a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"></path>
+                    </svg>
+                    <span>打开压缩包</span>
+                  </button>
+                  <button class="home-action-btn" id="new-archive-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 8v13H3V8"></path>
+                      <path d="M1 3h22v5H1z"></path>
+                      <path d="M10 12h4"></path>
+                    </svg>
+                    <span>新建压缩包</span>
+                  </button>
+                </div>
               </div>
-              <div class="file-column">2023-06-20 10:15</div>
-              <div class="file-column">文件夹</div>
-              <div class="file-column">-</div>
+              
+              <div class="action-group">
+                <h2>最近文件</h2>
+                <div class="recent-files-list">
+                  <p class="no-files-message">暂无最近打开的文件</p>
+                  <!-- 最近文件列表将通过JavaScript动态添加 -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 文件列表部分 -->
+          <div id="file-browser" class="file-browser" style="display: none;">
+            <div class="file-list-header">
+              <div class="file-list-column">名称</div>
+              <div class="file-list-column">修改日期</div>
+              <div class="file-list-column">类型</div>
+              <div class="file-list-column">大小</div>
+            </div>
+            <div class="file-list-body">
+              <!-- 文件列表将通过JavaScript动态添加 -->
             </div>
           </div>
         </div>
 
         <!-- 状态栏 -->
         <div class="status-bar">
-          <div class="status-left">2个项目</div>
-          <div class="status-right">总大小: 2.5 KB</div>
+          <div class="status-left">欢迎使用 Soar Zip</div>
+          <div class="status-right">版本: 0.1.0</div>
         </div>
       </div>
     </div>
