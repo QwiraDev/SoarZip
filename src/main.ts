@@ -18,6 +18,9 @@ let currentPathIndex = -1;
 // 当前文件夹路径
 let currentFolder = "";
 
+// 加载状态变量
+let isLoading = false;
+
 // 窗口控制功能
 function setupWindowControls() {
   const minimizeBtn = document.getElementById('minimize-btn');
@@ -174,6 +177,8 @@ async function openArchiveDialog() {
 // 打开压缩包并显示内容
 async function openArchive(archivePath: string) {
   try {
+    updateLoadingStatus(true, "正在读取压缩包...");
+    
     // 调用Rust函数打开压缩包
     const files = await invoke<FileItem[]>('open_archive', { archivePath });
     
@@ -198,6 +203,11 @@ async function openArchive(archivePath: string) {
   } catch (error) {
     console.error('打开压缩包失败:', error);
     showError(`打开压缩包失败: ${error}`);
+    
+    // 如果打开失败，返回主页
+    showHomePage();
+  } finally {
+    updateLoadingStatus(false);
   }
 }
 
@@ -264,8 +274,8 @@ function updateFileList(files: FileItem[]) {
   const fileListBody = document.querySelector('.file-list-body');
   if (!fileListBody) return;
   
-  // 清空现有文件列表
-  fileListBody.innerHTML = '';
+  // 创建文档片段进行离线DOM操作
+  const fragment = document.createDocumentFragment();
   
   // 筛选当前文件夹下的文件和直接子文件夹
   const currentFiles = files.filter(file => {
@@ -294,67 +304,105 @@ function updateFileList(files: FileItem[]) {
     return a.name.localeCompare(b.name);  // 按名称排序
   });
   
-  // 添加文件和文件夹
-  sortedFiles.forEach(file => {
-    // 获取显示名称（移除路径前缀）
-    let displayName = file.name;
-    const currentFolderPrefix = currentFolder.replace(/^\/\/|\/$/, ''); // 去除开头和结尾的斜杠
-    if (currentFolderPrefix && displayName.startsWith(currentFolderPrefix + '/')) {
-      displayName = displayName.substring(currentFolderPrefix.length + 1);
-    }
-    displayName = displayName.replace(/\/$/, ''); // 移除末尾的斜杠
-    
-    const fileItem = document.createElement('div');
-    fileItem.className = 'file-item';
-    
-    // 根据是否为文件夹选择不同图标
-    const icon = file.is_dir 
-      ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-        </svg>`
-      : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-        </svg>`;
-    
-    fileItem.innerHTML = `
-      <div class="file-column file-name">
-        ${icon}
-        <span>${displayName}</span>
-      </div>
-      <div class="file-column">${formatDate(file.modified_date)}</div>
-      <div class="file-column">${file.type_name}</div>
-      <div class="file-column">${file.is_dir ? '-' : formatFileSize(file.size)}</div>
-    `;
-    
-    // 添加点击事件
-    fileItem.addEventListener('click', () => {
-      // 清除所有选中状态
-      document.querySelectorAll('.file-item.selected').forEach(item => {
-        item.classList.remove('selected');
-      });
-      // 添加选中状态
-      fileItem.classList.add('selected');
-    });
-    
-    // 添加双击事件 - 如果是文件夹则进入，如果是文件则预览
-    fileItem.addEventListener('dblclick', () => {
-      if (file.is_dir) {
-        // 导航到子文件夹
-        navigateToFolder(file.name);
-      } else {
-        // 文件预览（后续实现）
-        console.log(`预览文件: ${file.name}`);
+  // 在替换内容前添加淡出效果
+  fileListBody.classList.add('fade-out');
+  
+  // 使用setTimeout延迟DOM操作，让淡出效果有时间显示
+  setTimeout(() => {
+    // 添加文件和文件夹到文档片段
+    sortedFiles.forEach(file => {
+      // 获取显示名称（移除路径前缀）
+      let displayName = file.name;
+      const currentFolderPrefix = currentFolder.replace(/^\/\/|\/$/, ''); // 去除开头和结尾的斜杠
+      if (currentFolderPrefix && displayName.startsWith(currentFolderPrefix + '/')) {
+        displayName = displayName.substring(currentFolderPrefix.length + 1);
       }
+      displayName = displayName.replace(/\/$/, ''); // 移除末尾的斜杠
+      
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      
+      // 根据是否为文件夹选择不同图标
+      const icon = file.is_dir 
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>`;
+      
+      fileItem.innerHTML = `
+        <div class="file-column file-name">
+          ${icon}
+          <span>${displayName}</span>
+        </div>
+        <div class="file-column">${formatDate(file.modified_date)}</div>
+        <div class="file-column">${file.type_name}</div>
+        <div class="file-column">${file.is_dir ? '-' : formatFileSize(file.size)}</div>
+      `;
+      
+      // 添加点击事件
+      fileItem.addEventListener('click', (e) => {
+        // 如果正在加载，阻止点击事件
+        if (isLoading) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        
+        // 清除所有选中状态
+        document.querySelectorAll('.file-item.selected').forEach(item => {
+          item.classList.remove('selected');
+        });
+        // 添加选中状态
+        fileItem.classList.add('selected');
+      });
+      
+      // 添加双击事件 - 如果是文件夹则进入，如果是文件则预览
+      fileItem.addEventListener('dblclick', (e) => {
+        // 如果正在加载，阻止双击事件
+        if (isLoading) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        
+        if (file.is_dir) {
+          // 导航到子文件夹
+          navigateToFolder(file.name);
+        } else {
+          // 文件预览（后续实现）
+          console.log(`预览文件: ${file.name}`);
+        }
+      });
+      
+      fragment.appendChild(fileItem);
     });
     
-    fileListBody.appendChild(fileItem);
-  });
+    // 清空现有文件列表并添加新内容
+    fileListBody.innerHTML = '';
+    fileListBody.appendChild(fragment);
+    
+    // 添加淡入效果
+    fileListBody.classList.remove('fade-out');
+    fileListBody.classList.add('fade-in');
+    
+    // 淡入效果完成后移除类
+    setTimeout(() => {
+      fileListBody.classList.remove('fade-in');
+    }, 300);
+  }, 10); // 缩短延迟时间，减少感知延迟
 }
 
 // 导航到指定文件夹
 function navigateToFolder(folderPath: string) {
   console.log(`导航到文件夹: ${folderPath}`);
+  
+  // 如果正在加载，忽略该请求
+  if (isLoading) {
+    return;
+  }
   
   // 更新当前文件夹路径
   currentFolder = folderPath.endsWith('/') ? folderPath : folderPath + '/';
@@ -372,12 +420,12 @@ function navigateToFolder(folderPath: string) {
   pathHistory.push(currentFolder);
   currentPathIndex = pathHistory.length - 1;
   
-  // 重新加载文件列表
-  reloadCurrentArchive();
-  
   // 更新UI
   updatePathNavigation();
   updateNavButtonsState();
+  
+  // 重新加载文件列表
+  reloadCurrentArchive();
 }
 
 // 重新加载当前压缩包
@@ -385,12 +433,16 @@ async function reloadCurrentArchive() {
   if (!currentArchivePath) return;
   
   try {
+    updateLoadingStatus(true, "正在读取...");
+    
     const files = await invoke<FileItem[]>('open_archive', { archivePath: currentArchivePath });
     updateFileList(files);
     updateStatusBar(files);
   } catch (error) {
     console.error('重新加载压缩包失败:', error);
     showError(`重新加载压缩包失败: ${error}`);
+  } finally {
+    updateLoadingStatus(false);
   }
 }
 
@@ -435,6 +487,11 @@ function updateNavButtonsState() {
   const forwardBtn = document.querySelector('.nav-btn[title="前进"]');
   const upBtn = document.querySelector('.nav-btn[title="上一级"]');
   
+  // 移除所有禁用状态
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    (btn as HTMLElement).classList.remove('disabled');
+  });
+  
   if (backBtn) {
     if (currentPathIndex > 0) {
       backBtn.classList.remove('disabled');
@@ -457,6 +514,13 @@ function updateNavButtonsState() {
     } else {
       upBtn.classList.add('disabled');
     }
+  }
+  
+  // 如果正在加载，禁用所有导航按钮
+  if (isLoading) {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      (btn as HTMLElement).classList.add('disabled');
+    });
   }
 }
 
@@ -631,6 +695,29 @@ function setupLogoClick() {
 function setupFileItems() {
   // 这部分逻辑已经在updateFileList中实现
   // 每次更新文件列表时会重新设置点击事件
+}
+
+// 更新加载状态
+function updateLoadingStatus(loading: boolean, message: string = "") {
+  const statusLeft = document.querySelector('.status-left');
+  if (statusLeft) {
+    if (loading) {
+      statusLeft.textContent = message;
+      
+      // 添加加载指示器
+      document.body.classList.add('loading');
+      
+      // 禁用导航按钮
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        (btn as HTMLElement).classList.add('disabled');
+      });
+    } else {
+      document.body.classList.remove('loading');
+      
+      // 恢复导航按钮状态
+      updateNavButtonsState();
+    }
+  }
 }
 
 // 初始化

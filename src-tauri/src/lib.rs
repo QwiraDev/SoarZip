@@ -6,6 +6,8 @@ use rfd::FileDialog;
 use std::collections::HashSet;
 use std::io::Write;
 use std::fs::File;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 // 文件项结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -15,11 +17,6 @@ pub struct FileItem {
     size: u64,
     modified_date: String,
     type_name: String,
-}
-
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
@@ -71,6 +68,102 @@ fn save_debug_info(data: &str, filename: &str) {
     }
 }
 
+// 检查7z是否安装
+fn check_7z_installed() -> Result<String, String> {
+    #[cfg(target_os = "windows")]
+    {
+        let default_path = r"C:\Program Files\7-Zip\7z.exe";
+        
+        // 首先检查默认路径
+        if Path::new(default_path).exists() {
+            return Ok(default_path.to_string());
+        }
+        
+        // 检查其他可能的路径
+        let other_paths = [
+            r"C:\Program Files (x86)\7-Zip\7z.exe",
+            r"C:\7-Zip\7z.exe"
+        ];
+        
+        for path in other_paths.iter() {
+            if Path::new(path).exists() {
+                return Ok(path.to_string());
+            }
+        }
+        
+        // 尝试通过系统路径查找
+        match Command::new("where").args(&["7z.exe"]).output() {
+            Ok(output) if output.status.success() => {
+                let path = String::from_utf8_lossy(&output.stdout);
+                let path = path.trim();
+                if !path.is_empty() && Path::new(path).exists() {
+                    return Ok(path.to_string());
+                }
+            },
+            _ => {}
+        }
+    }
+    
+    #[cfg(target_os = "macos")]
+    {
+        // 在macOS上检查7z
+        let paths = [
+            "/usr/local/bin/7z",
+            "/opt/homebrew/bin/7z",
+            "/usr/bin/7z"
+        ];
+        
+        for path in paths.iter() {
+            if Path::new(path).exists() {
+                return Ok(path.to_string());
+            }
+        }
+        
+        // 尝试通过which命令查找
+        match Command::new("which").arg("7z").output() {
+            Ok(output) if output.status.success() => {
+                let path = String::from_utf8_lossy(&output.stdout);
+                let path = path.trim();
+                if !path.is_empty() && Path::new(path).exists() {
+                    return Ok(path.to_string());
+                }
+            },
+            _ => {}
+        }
+    }
+    
+    #[cfg(target_os = "linux")]
+    {
+        // 在Linux上检查7z
+        let paths = [
+            "/usr/bin/7z",
+            "/usr/local/bin/7z",
+            "/bin/7z"
+        ];
+        
+        for path in paths.iter() {
+            if Path::new(path).exists() {
+                return Ok(path.to_string());
+            }
+        }
+        
+        // 尝试通过which命令查找
+        match Command::new("which").arg("7z").output() {
+            Ok(output) if output.status.success() => {
+                let path = String::from_utf8_lossy(&output.stdout);
+                let path = path.trim();
+                if !path.is_empty() && Path::new(path).exists() {
+                    return Ok(path.to_string());
+                }
+            },
+            _ => {}
+        }
+    }
+    
+    // 未找到7z
+    Err("未找到7-Zip工具。请安装7-Zip并确保其在系统路径中。".to_string())
+}
+
 #[tauri::command]
 fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
     // 检查文件是否存在
@@ -78,19 +171,33 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         return Err(format!("压缩包不存在: {}", archive_path));
     }
     
-    // 7-zip可执行文件路径
-    let seven_zip_path = r"C:\Program Files\7-Zip\7z.exe";
+    // 获取7-zip路径
+    let seven_zip_path = check_7z_installed()?;
     
     // 使用详细列表格式获取文件列表，包含完整属性
-    let output = Command::new(seven_zip_path)
+    #[cfg(target_os = "windows")]
+    let output = Command::new(&seven_zip_path)
         .args(&["l", "-slt", archive_path])
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW flag (Windows特有)
+        .stdout(std::process::Stdio::piped()) // 捕获标准输出
+        .stderr(std::process::Stdio::piped()) // 捕获标准错误
+        .output()
+        .map_err(|e| format!("执行7-Zip命令失败: {}", e))?;
+        
+    #[cfg(not(target_os = "windows"))]
+    let output = Command::new(&seven_zip_path)
+        .args(&["l", "-slt", archive_path])
+        .stdout(std::process::Stdio::piped()) // 捕获标准输出
+        .stderr(std::process::Stdio::piped()) // 捕获标准错误
         .output()
         .map_err(|e| format!("执行7-Zip命令失败: {}", e))?;
     
     if !output.status.success() {
+        let error_message = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "7-Zip命令执行失败，退出代码: {}",
-            output.status.code().unwrap_or(-1)
+            "7-Zip命令执行失败，退出代码: {}，错误信息: {}",
+            output.status.code().unwrap_or(-1),
+            error_message
         ));
     }
     
@@ -112,29 +219,27 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         let line = line.trim();
         
         if line.starts_with("Path = ") {
-            // 新条目开始，保存之前的条目（如果存在）
+            // 保存前一个条目
             if let Some(mut item) = current_item.take() {
-                item.name = item.name.replace('\\', "/"); // 再次确保路径分隔符统一
+                item.name = item.name.replace('\\', "/"); // 统一路径分隔符
                 if !processed_paths.contains(&item.name) {
-                    processed_paths.insert(item.name.clone()); // 先插入再移动
+                    processed_paths.insert(item.name.clone());
                     files.push(item);
                 }
             }
             
-            // 获取文件路径
-            path = line.trim_start_matches("Path = ").to_string();
-            // 标准化路径分隔符
-            path = path.replace('\\', "/");
+            // 获取并标准化文件路径
+            path = line.trim_start_matches("Path = ").to_string().replace('\\', "/");
             
-            // 重置其他字段
+            // 重置字段
             size = 0;
             is_dir = false;
             date = String::new();
         } else if line.starts_with("Size = ") {
             // 解析文件大小
-            size = line.trim_start_matches("Size = ")
-                .parse::<u64>()
-                .unwrap_or(0);
+            if let Ok(parsed_size) = line.trim_start_matches("Size = ").parse::<u64>() {
+                size = parsed_size;
+            }
         } else if line.starts_with("Folder = ") {
             // 解析是否为文件夹
             is_dir = line.trim_start_matches("Folder = ") == "+";
@@ -146,7 +251,7 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
             // 解析修改日期
             date = line.trim_start_matches("Modified = ").to_string();
         } else if line.is_empty() && !path.is_empty() {
-            // 空行表示一个条目结束
+            // 空行表示条目结束，处理当前条目
             // 确定文件类型
             let type_name = if is_dir {
                 "文件夹".to_string()
@@ -193,9 +298,9 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
     
     // 添加最后一个条目（如果有）
     if let Some(mut item) = current_item.take() {
-        item.name = item.name.replace('\\', "/"); // 再次确保路径分隔符统一
+        item.name = item.name.replace('\\', "/"); // 确保路径分隔符统一
         if !processed_paths.contains(&item.name) {
-            processed_paths.insert(item.name.clone()); // 先插入再移动
+            processed_paths.insert(item.name.clone());
             files.push(item);
         }
     }
@@ -261,7 +366,6 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet,
             minimize_window,
             maximize_window,
             close_window,

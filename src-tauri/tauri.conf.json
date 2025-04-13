@@ -29,5 +29,10 @@
     "icon": [
       "icons/icon.png"
     ]
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
   }
 }

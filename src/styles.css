@@ -400,6 +400,7 @@ body {
   flex-direction: column;
   overflow: hidden;
   background-color: white;
+  transition: background-color 0.2s ease-in-out;
 }
 
 /* 主页样式 */
@@ -577,6 +578,7 @@ body {
 .file-list-body {
   flex: 1;
   overflow-y: auto;
+  transition: opacity 0.15s ease-in-out;
 }
 
 .file-item {
@@ -586,6 +588,7 @@ body {
   padding: 0 16px;
   border-bottom: 1px solid var(--border-color);
   font-size: 13px;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .file-item:hover {
@@ -642,6 +645,88 @@ body {
   background: #aaa;
 }
 
+/* 加载状态样式 */
+.loading::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  animation: fadeInOverlay 0.3s forwards;
+}
+
+.loading::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 0.8s linear infinite;
+  z-index: 10000;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes fadeInOverlay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 文件列表过渡效果 */
+.file-list-body {
+  transition: opacity 0.15s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0.5;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+/* 文件项悬停效果优化 */
+.file-item {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* 内容区域基础样式优化 */
+.file-explorer {
+  background-color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* 文件浏览器背景改为白色，避免闪烁 */
+#file-browser {
+  background-color: white;
+}
+
 /* 深色模式支持 */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -658,8 +743,9 @@ body {
     --card-hover-color: #333333;
   }
 
-  .file-explorer {
+  .file-explorer, #file-browser {
     background-color: #262626;
+    transition: background-color 0.2s ease-in-out;
   }
   
   .dropdown-menu {
