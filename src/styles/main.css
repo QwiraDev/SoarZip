@@ -1,49 +1,23 @@
-/* 主样式文件 - 导入所有样式模块 */
+/* Main CSS Import File */
 
-/* 导入基础样式 */
-@import "./base.css";
-@import "./layout.css";
+/* Base and Utility Styles */
+@import './base.css';
+@import './utils.css';
+@import './components.css';
 
-/* 导入组件样式 */
-@import "./components.css";
-@import "./notification.css";
+/* Layout and Structure */
+@import './layout.css';
+@import './titlebar.css';
+@import './toolbar.css';
+@import './file-explorer.css';
+@import './status-bar.css';
+@import './notification.css';
 
-/* 导入各部分 UI 样式 */
-@import "./titlebar.css";
-@import "./toolbar.css";
-@import "./home.css";
-@import "./file-explorer.css";
-@import "./status-bar.css";
+/* Page-specific Styles */
+@import './home.css';
 
-/* 导入工具类样式 */
-@import "./utils.css";
-
-/* 
-  The following styles were moved:
-  - .empty-folder: Moved to file-explorer.css or home.css (verify location)
-  - .file-item.disabled: Moved to file-explorer.css or components.css (verify location)
-  - logo hover effects: Moved to titlebar.css (verify location)
-*/
-
-/* 主样式文件 - 导入所有样式模块 */
-
-/* 导入基础样式 */
-@import "./base.css";
-@import "./layout.css";
-
-/* 导入组件样式 */
-@import "./components.css";
-@import "./notification.css";
-
-/* 导入各部分 UI 样式 */
-@import "./titlebar.css";
-@import "./toolbar.css";
-@import "./home.css";
-@import "./file-explorer.css";
-@import "./status-bar.css";
-
-/* 导入工具类样式 */
-@import "./utils.css";
+/* Feature-specific Styles */
+@import './settings.css'; /* 新增：设置样式 */
 
 /* Specific styles previously in main.css - move to appropriate files if needed */
 
@@ -71,6 +45,4 @@
 
 .logo.typescript:hover {
   filter: drop-shadow(0 0 2em #2d79c7);
-}
-
-/* 添加更多自定义样式 */ 
+} 

@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: white; /* Default background for the explorer */
+  background-color: var(--card-bg-color);
   transition: background-color 0.2s ease-in-out;
 }
 
@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background-color: white;
+  background-color: var(--card-bg-color);
 }
 
 .file-list-header {
@@ -25,6 +25,8 @@
   border-bottom: 1px solid var(--border-color);
   font-weight: 500;
   font-size: 12px;
+  color: var(--text-secondary-color);
+  flex-shrink: 0;
 }
 
 .file-list-column {
@@ -38,6 +40,24 @@
   transition: opacity 0.15s ease-in-out; /* Keep transition */
 }
 
+.file-list-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.file-list-body::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.file-list-body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.file-list-body::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
 .file-item {
   display: flex;
   align-items: center;
@@ -46,6 +66,8 @@
   border-bottom: 1px solid var(--border-color);
   font-size: 13px;
   transition: background-color 0.15s ease-in-out; /* Keep transition */
+  color: var(--text-color);
+  cursor: pointer;
 }
 
 .file-item:hover {
@@ -53,7 +75,9 @@
 }
 
 .file-item.selected {
-  background-color: rgba(0, 120, 212, 0.1); /* Use accent color */
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+  color: var(--primary-color);
+  font-weight: 500;
 }
 
 .file-column {
@@ -70,9 +94,45 @@
   gap: 8px;
 }
 
-/* Dark mode adaptations */
-@media (prefers-color-scheme: dark) {
-  .file-explorer, #file-browser {
-    background-color: #262626; /* Dark background for file explorer */
-  }
+.file-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.file-item.selected .file-icon {
+  color: var(--primary-color);
+}
+
+/* Empty state styling */
+.empty-folder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 200px;
+  color: var(--text-secondary-color);
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.empty-folder-icon {
+  font-size: 48px;
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+/* Disabled state */
+.file-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  color: var(--text-secondary-color);
+}
+
+.file-item.disabled:hover {
+  background-color: transparent; /* 禁止悬停效果 */
 } 

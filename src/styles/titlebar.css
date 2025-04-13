@@ -21,6 +21,14 @@
   align-items: center;
   margin-right: 12px;
   -webkit-app-region: drag;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--control-border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.logo:hover {
+  background-color: var(--hover-color);
 }
 
 .logo img {
@@ -32,6 +40,7 @@
 .logo span {
   font-weight: 500;
   font-size: 14px;
+  color: var(--text-color);
 }
 
 .main-menu {
@@ -59,18 +68,28 @@
   height: calc(var(--titlebar-height) - 12px);
   display: flex;
   align-items: center;
+  color: var(--text-color);
+  transition: background-color 0.15s ease;
 }
 
 .menu-item:hover {
   background-color: var(--hover-color);
 }
 
+.menu-item:active {
+  background-color: var(--active-color);
+}
+
 .titlebar-center {
   flex: 1;
   text-align: center;
   font-size: 13px;
-  color: #666;
+  color: var(--text-secondary-color);
   -webkit-app-region: drag;
+  padding: 0 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .titlebar-right {
@@ -92,6 +111,8 @@
   cursor: pointer;
   margin: 3px;
   border-radius: var(--control-border-radius);
+  color: var(--text-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .window-control:hover {
@@ -109,6 +130,10 @@
 #close-btn:hover {
   background-color: var(--close-btn-hover);
   color: white;
+}
+
+:root.theme-dark #close-btn:hover {
+  color: white; /* 确保深色模式下关闭按钮悬停时文字是白色 */
 }
 
 #settings-btn {

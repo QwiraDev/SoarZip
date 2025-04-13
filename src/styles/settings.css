@@ -1,0 +1,288 @@
+/* 设置面板样式 */
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--overlay-color);
+  z-index: 9000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.settings-overlay.open {
+  opacity: 1;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background-color: var(--card-bg-color);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  z-index: 9001;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.settings-panel.open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.settings-close-btn {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.settings-close-btn:hover {
+  background-color: var(--hover-color);
+  transform: rotate(90deg);
+}
+
+.settings-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  color: var(--text-color);
+}
+
+.settings-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.settings-section {
+  margin-bottom: 28px;
+}
+
+.settings-section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: var(--primary-color);
+  border-left: 3px solid var(--primary-color);
+  padding-left: 10px;
+}
+
+.theme-selector {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  padding: 16px;
+  cursor: pointer;
+  background-color: var(--card-bg-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(var(--primary-color-rgb), 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-option:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-option:hover::before {
+  opacity: 1;
+}
+
+.theme-option.selected {
+  border-color: var(--primary-color);
+  background-color: rgba(var(--primary-color-rgb), 0.08);
+}
+
+.theme-option.selected::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background-color: var(--primary-color);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.theme-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+  font-size: 32px;
+  transition: transform 0.3s ease;
+}
+
+.theme-option:hover .theme-icon {
+  transform: scale(1.1);
+}
+
+.theme-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+  color: var(--text-color);
+}
+
+.settings-footer {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.settings-save-btn {
+  padding: 8px 24px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-weight: 500;
+}
+
+.settings-save-btn:hover {
+  background-color: var(--primary-hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 深色模式适配变量 */
+:root {
+  --primary-color-rgb: 0, 120, 212;
+}
+
+:root.theme-dark {
+  --primary-color-rgb: 77, 169, 255;
+}
+
+/* 深色模式适配 */
+.theme-dark .settings-panel,
+:root.theme-dark .settings-panel {
+  background-color: var(--card-bg-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.theme-dark .theme-option,
+:root.theme-dark .theme-option {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.theme-dark .theme-option:hover,
+:root.theme-dark .theme-option:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 浅色模式覆盖 */
+.theme-light .settings-panel,
+:root.theme-light .settings-panel {
+  background-color: #ffffff;
+}
+
+.theme-light .theme-option,
+:root.theme-light .theme-option {
+  background-color: #f8f8f8;
+}
+
+.settings-description {
+  color: var(--text-secondary-color);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 12px;
+  padding: 0 8px;
+}
+
+.about-content {
+  padding: 8px;
+  background-color: rgba(var(--primary-color-rgb), 0.05);
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+.about-content p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.about-content .copyright {
+  font-size: 12px;
+  color: var(--text-secondary-color);
+  margin-top: 12px;
+  font-style: italic;
+} 

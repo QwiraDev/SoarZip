@@ -3,7 +3,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: var(--bg-color);
+  background-color: var(--dropdown-bg-color);
   border: 1px solid var(--border-color);
   border-radius: var(--control-border-radius);
   box-shadow: 0 4px 12px var(--shadow-color);
@@ -13,11 +13,22 @@
   padding: 6px;
   margin-top: 2px;
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.95); /* Consider variable for this */
 }
 
 .dropdown-menu.show {
   display: block;
+  animation: dropdown-fade 0.2s ease;
+}
+
+@keyframes dropdown-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdown-item {
@@ -32,10 +43,15 @@
   color: var(--text-color);
   border-radius: var(--control-border-radius);
   margin: 2px 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .dropdown-item:hover {
   background-color: var(--hover-color);
+}
+
+.dropdown-item:active {
+  background-color: var(--active-color);
 }
 
 .menu-divider {
@@ -47,8 +63,8 @@
 /* Add other reusable component styles here */
 
 /* Dark mode adaptations */
-@media (prefers-color-scheme: dark) {
-  .dropdown-menu {
-    background-color: rgba(40, 40, 40, 0.95); /* Dark mode background */
-  }
+.theme-dark .dropdown-menu,
+:root.theme-dark .dropdown-menu {
+  background-color: var(--dropdown-bg-color);
+  border-color: var(--border-color);
 }

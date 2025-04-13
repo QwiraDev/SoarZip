@@ -28,6 +28,7 @@ import {
   showInfo, 
   showSuccess 
 } from "./ui/notification";
+import { initializeTheme } from "./services/themeService";
 
 // Import setup modules
 import { setupWindowControls } from './setup/windowControls';
@@ -37,6 +38,7 @@ import { setupNavButtons, NavigationDependencies } from './setup/navigation';
 import { setupToolbarButtons, ToolbarDependencies } from './setup/toolbar';
 import { setupSearch, SearchDependencies } from './setup/search';
 import { setupLogoClick, LogoClickDependencies } from './setup/logo';
+import { setupSettingsButton, SettingsDependencies } from './setup/settings';
 
 // 导入样式
 import "./styles/main.css";
@@ -51,6 +53,9 @@ let isLoading = false;
 // 应用初始化
 function initializeApp() {
   console.log("Initializing application...");
+  
+  // 初始化主题
+  initializeTheme();
 
   // Setup UI components by calling imported functions
   setupWindowControls(); 
@@ -98,6 +103,9 @@ function initializeApp() {
       updateStatusBar();
     }
   } as LogoClickDependencies);
+  
+  // 设置设置按钮
+  setupSettingsButton({} as SettingsDependencies);
   
   // Default view
   showHomePage();

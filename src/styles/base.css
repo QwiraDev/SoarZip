@@ -1,8 +1,11 @@
 :root {
+  /* 默认浅色主题变量 */
   --bg-color: #f9f9f9;
   --text-color: #202020;
+  --text-secondary-color: #606060;
   --border-color: #e0e0e0;
   --primary-color: #0078d4;
+  --primary-hover-color: #106ebe;
   --hover-color: #f0f0f0;
   --active-color: #e5e5e5;
   --titlebar-height: 38px;
@@ -21,6 +24,11 @@
   --card-hover-color: #f5f5f5;
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --menu-item-radius: 6px;
+  --dropdown-bg-color: rgba(255, 255, 255, 0.95);
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: #ccc;
+  --scrollbar-thumb-hover: #aaa;
+  --overlay-color: rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -37,19 +45,67 @@ body {
   user-select: none;
 }
 
-/* Dark mode variables */
+/* 浅色主题变量覆盖 */
+:root.theme-light {
+  --bg-color: #f9f9f9;
+  --text-color: #202020;
+  --text-secondary-color: #606060;
+  --border-color: #e0e0e0;
+  --primary-color: #0078d4;
+  --primary-hover-color: #106ebe;
+  --hover-color: #f0f0f0;
+  --active-color: #e5e5e5;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --window-control-hover: rgba(0, 0, 0, 0.05);
+  --window-control-active: rgba(0, 0, 0, 0.08);
+  --card-bg-color: #ffffff;
+  --card-hover-color: #f5f5f5;
+  --dropdown-bg-color: rgba(255, 255, 255, 0.95);
+  --scrollbar-thumb: #ccc;
+  --scrollbar-thumb-hover: #aaa;
+  --overlay-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 深色主题变量 */
+:root.theme-dark {
+  --bg-color: #1e1e1e;
+  --text-color: #e8e8e8;
+  --text-secondary-color: #a0a0a0;
+  --border-color: #444444;
+  --primary-color: #4da9ff;
+  --primary-hover-color: #60b3ff;
+  --hover-color: #2c2c2c;
+  --active-color: #3a3a3a;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --window-control-hover: rgba(255, 255, 255, 0.1);
+  --window-control-active: rgba(255, 255, 255, 0.15);
+  --card-bg-color: #252525;
+  --card-hover-color: #333333;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --dropdown-bg-color: rgba(40, 40, 40, 0.95);
+  --scrollbar-thumb: #555;
+  --scrollbar-thumb-hover: #777;
+  --overlay-color: rgba(0, 0, 0, 0.7);
+}
+
+/* 兼容性：为支持旧代码，保留媒体查询 */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #202020;
-    --text-color: #ffffff;
-    --border-color: #3a3a3a;
-    /* --primary-color: #0078d4; /* Primary color might need adjustment for dark mode contrast */
-    --hover-color: #2a2a2a;
-    --active-color: #333333;
-    --shadow-color: rgba(0, 0, 0, 0.2);
+  :root:not(.theme-light) {
+    --bg-color: #1e1e1e;
+    --text-color: #e8e8e8;
+    --text-secondary-color: #a0a0a0;
+    --border-color: #444444;
+    --primary-color: #4da9ff;
+    --primary-hover-color: #60b3ff;
+    --hover-color: #2c2c2c;
+    --active-color: #3a3a3a;
+    --shadow-color: rgba(0, 0, 0, 0.3);
     --window-control-hover: rgba(255, 255, 255, 0.1);
     --window-control-active: rgba(255, 255, 255, 0.15);
-    --card-bg-color: #262626;
+    --card-bg-color: #252525;
     --card-hover-color: #333333;
+    --dropdown-bg-color: rgba(40, 40, 40, 0.95);
+    --scrollbar-thumb: #555;
+    --scrollbar-thumb-hover: #777;
   }
 } 

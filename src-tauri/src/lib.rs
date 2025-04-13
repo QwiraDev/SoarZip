@@ -4,9 +4,6 @@ use serde::{Serialize, Deserialize};
 use std::path::Path;
 use rfd::FileDialog;
 use std::collections::HashSet;
-use std::io::Write;
-use std::fs::File;
-use std::time::SystemTime;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 

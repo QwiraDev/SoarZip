@@ -32,6 +32,8 @@
   border: none;
   border-radius: var(--control-border-radius);
   cursor: pointer;
+  color: var(--text-color);
+  transition: background-color 0.15s ease;
 }
 
 .nav-btn:hover {
@@ -45,12 +47,17 @@
 .nav-btn.disabled { /* Moved .disabled here for specificity */
   opacity: 0.5;
   cursor: not-allowed;
+  color: var(--text-secondary-color);
+}
+
+.nav-btn.disabled:hover {
+  background-color: transparent;
 }
 
 .path-container {
   flex: 1;
   margin: 0 16px;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(var(--text-color-rgb), 0.02); /* Use RGB for opacity on text color */
   border: 1px solid var(--border-color);
   border-radius: var(--control-border-radius);
   padding: 0 10px;
@@ -58,18 +65,23 @@
   overflow: hidden; /* Prevent path overflow */
 }
 
+:root.theme-dark .path-container {
+  background-color: rgba(var(--text-color-rgb, 255, 255, 255), 0.05);
+}
+
 .nav-path {
   display: flex;
   align-items: center;
   height: 100%;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary-color);
   white-space: nowrap; /* Prevent wrapping */
 }
 
 .path-separator {
   margin: 0 8px;
-  color: #999;
+  color: var(--text-secondary-color);
+  opacity: 0.7;
 }
 
 .path-item {
@@ -77,6 +89,8 @@
   display: flex;
   align-items: center;
   padding: 0 2px; /* Add some padding */
+  color: var(--text-secondary-color);
+  transition: color 0.2s ease;
 }
 
 .path-archive {
@@ -94,12 +108,16 @@
 .search-container {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(var(--text-color-rgb), 0.02);
   border: 1px solid var(--border-color);
   border-radius: var(--control-border-radius);
   padding: 0 4px;
   height: 28px;
   width: 200px;
+}
+
+:root.theme-dark .search-container {
+  background-color: rgba(var(--text-color-rgb, 255, 255, 255), 0.05);
 }
 
 .search-input {
@@ -113,6 +131,11 @@
   color: var(--text-color);
 }
 
+.search-input::placeholder {
+  color: var(--text-secondary-color);
+  opacity: 0.8;
+}
+
 .search-btn {
   background: transparent;
   border: none;
@@ -124,11 +147,13 @@
   width: 24px;
   height: 24px;
   border-radius: var(--control-border-radius);
-  color: #666;
+  color: var(--text-secondary-color);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .search-btn:hover {
   background-color: var(--hover-color);
+  color: var(--text-color);
 }
 
 /* Actions Bar (Second row of toolbar) */
@@ -156,6 +181,11 @@
   gap: 3px;
   height: 42px;
   min-width: 50px;
+  transition: background-color 0.15s ease;
+}
+
+.tool-btn svg {
+  color: var(--primary-color);
 }
 
 .tool-btn:hover {

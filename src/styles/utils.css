@@ -7,16 +7,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc; /* Consider variable */
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #aaa; /* Consider variable */
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Loading Indicator Styles */
@@ -27,8 +27,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.2); /* Overlay color */
-  backdrop-filter: blur(1px);
+  background-color: var(--overlay-color);
+  backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,12 +47,18 @@
   transform: translate(-50%, -50%);
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3); /* Spinner track color */
+  border: 3px solid rgba(255, 255, 255, 0.2); /* Spinner track color */
   border-radius: 50%;
   border-top-color: var(--primary-color); /* Spinner active color */
   animation: spin 0.8s linear infinite;
   z-index: 10000;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+:root.theme-dark .loading::before {
+  border-color: rgba(0, 0, 0, 0.2);
+  border-top-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 @keyframes spin {
@@ -82,4 +88,59 @@
 .fade-in {
   opacity: 1;
   transition: opacity 0.15s ease-in-out;
+}
+
+/* 自定义链接样式 */
+.text-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.text-link:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary-color);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.3s;
+}
+
+.text-link:hover:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* 状态提示 */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color);
+}
+
+.badge-success {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.badge-warning {
+  background-color: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.badge-danger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }

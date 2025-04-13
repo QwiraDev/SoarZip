@@ -8,7 +8,8 @@
   background-color: var(--bg-color);
   border-top: 1px solid var(--border-color);
   font-size: 12px;
-  color: #666; /* Consider a secondary text color variable */
+  color: var(--text-secondary-color);
+  flex-shrink: 0;
 }
 
 .status-left,
