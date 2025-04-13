@@ -1,25 +1,76 @@
-import { invoke } from "@tauri-apps/api/core";
-import { formatFileSize, formatDate } from "./utils.ts";
+import { formatFileSize } from "./utils";
+import { 
+  FileItem, 
+  openArchive, 
+  selectArchiveFile, 
+  filterFilesByFolder, 
+  sortFiles, 
+  getFileStats 
+} from "./services/fileService";
+import { 
+  minimizeWindow, 
+  maximizeWindow, 
+  closeWindow, 
+  setWindowTitle, 
+  getFileNameFromPath 
+} from "./services/windowService";
+import { 
+  navigationHistory, 
+  normalizeFolderPath, 
+  updateNavButtonsState 
+} from "./services/navigationService";
+import { 
+  showFileBrowser, 
+  showHomePage, 
+  updateFileList, 
+  updatePathNavigation, 
+  setLoading 
+} from "./ui/fileExplorer";
+import { 
+  showError, 
+  showInfo, 
+  showSuccess 
+} from "./ui/notification";
 
-// 定义文件项类型
-interface FileItem {
-  name: string;
-  is_dir: boolean;
-  size: number;
-  modified_date: string;
-  type_name: string;
-}
+// 导入样式
+import "./styles/main.css";
 
 // 当前打开的压缩包路径
 let currentArchivePath = "";
-// 当前路径栈，用于导航
-let pathHistory: string[] = [];
-let currentPathIndex = -1;
-// 当前文件夹路径
-let currentFolder = "";
-
+// 当前文件列表缓存
+let currentFiles: FileItem[] = [];
 // 加载状态变量
 let isLoading = false;
+
+// 应用初始化
+function initializeApp() {
+  // 设置窗口控制
+  setupWindowControls();
+  
+  // 设置菜单项
+  setupMenuItems();
+  
+  // 设置搜索功能
+  setupSearch();
+  
+  // 设置导航按钮
+  setupNavButtons();
+  
+  // 设置工具栏按钮
+  setupToolbarButtons();
+  
+  // 设置主页按钮
+  setupHomeActions();
+  
+  // 设置logo点击
+  setupLogoClick();
+  
+  // 默认显示主页并隐藏工具栏
+  showHomePage();
+  
+  // 更新状态栏
+  updateStatusBar();
+}
 
 // 窗口控制功能
 function setupWindowControls() {
@@ -27,17 +78,9 @@ function setupWindowControls() {
   const maximizeBtn = document.getElementById('maximize-btn');
   const closeBtn = document.getElementById('close-btn');
 
-  minimizeBtn?.addEventListener('click', async () => {
-    await invoke('minimize_window');
-  });
-
-  maximizeBtn?.addEventListener('click', async () => {
-    await invoke('maximize_window');
-  });
-
-  closeBtn?.addEventListener('click', async () => {
-    await invoke('close_window');
-  });
+  minimizeBtn?.addEventListener('click', minimizeWindow);
+  maximizeBtn?.addEventListener('click', maximizeWindow);
+  closeBtn?.addEventListener('click', closeWindow);
 }
 
 // 菜单点击处理
@@ -104,9 +147,7 @@ function setupHomeActions() {
   const openArchiveBtn = document.getElementById('open-archive-btn');
   const newArchiveBtn = document.getElementById('new-archive-btn');
   
-  openArchiveBtn?.addEventListener('click', async () => {
-    await openArchiveDialog();
-  });
+  openArchiveBtn?.addEventListener('click', openArchiveDialog);
   
   newArchiveBtn?.addEventListener('click', () => {
     // 新建压缩包逻辑（后续实现）
@@ -114,59 +155,15 @@ function setupHomeActions() {
   });
 }
 
-// 切换到文件浏览页面
-function showFileBrowser() {
-  const homePage = document.getElementById('home-page');
-  const fileBrowser = document.getElementById('file-browser');
-  const toolbar = document.querySelector('.toolbar');
-  
-  if (homePage && fileBrowser && toolbar) {
-    homePage.style.display = 'none';
-    fileBrowser.style.display = 'flex';
-    (toolbar as HTMLElement).style.display = 'flex'; // 显示工具栏
-  }
-}
-
-// 切换到主页
-function showHomePage() {
-  const homePage = document.getElementById('home-page');
-  const fileBrowser = document.getElementById('file-browser');
-  const toolbar = document.querySelector('.toolbar');
-  
-  if (homePage && fileBrowser && toolbar) {
-    homePage.style.display = 'flex';
-    fileBrowser.style.display = 'none';
-    (toolbar as HTMLElement).style.display = 'none'; // 隐藏工具栏
-    
-    // 重置状态
-    const statusLeft = document.querySelector('.status-left');
-    const statusRight = document.querySelector('.status-right');
-    
-    if (statusLeft) {
-      statusLeft.textContent = '欢迎使用 Soar Zip';
-    }
-    
-    if (statusRight) {
-      statusRight.textContent = '版本: 0.1.0';
-    }
-    
-    // 更新标题
-    const currentFile = document.getElementById('current-file');
-    if (currentFile) {
-      currentFile.textContent = '未打开文件';
-    }
-  }
-}
-
 // 打开压缩包对话框
 async function openArchiveDialog() {
   try {
     // 打开原生文件选择对话框
-    const selected = await invoke<string | null>('select_archive_file');
+    const selected = await selectArchiveFile();
     
     if (selected) {
       // 打开选择的压缩包
-      openArchive(selected);
+      await loadArchive(selected);
     }
   } catch (error) {
     console.error('打开文件对话框失败:', error);
@@ -174,32 +171,36 @@ async function openArchiveDialog() {
   }
 }
 
-// 打开压缩包并显示内容
-async function openArchive(archivePath: string) {
+// 加载压缩包并显示内容
+async function loadArchive(archivePath: string) {
   try {
     updateLoadingStatus(true, "正在读取压缩包...");
     
-    // 调用Rust函数打开压缩包
-    const files = await invoke<FileItem[]>('open_archive', { archivePath });
+    // 调用后端打开压缩包
+    console.log(`开始打开压缩包: ${archivePath}`);
+    const files = await openArchive(archivePath);
+    console.log(`成功获取文件列表，共${files.length}个项目`);
+    console.log("前10个文件:", files.slice(0, 10));
     
     // 更新当前压缩包路径
     currentArchivePath = archivePath;
+    currentFiles = files;
     
     // 重置导航历史
-    pathHistory = [""];
-    currentPathIndex = 0;
-    currentFolder = "";
+    navigationHistory.reset("");
     
     // 切换到文件浏览页面
     showFileBrowser();
     
     // 更新UI
-    updatePathNavigation();
-    updateFileList(files);
-    updateArchiveTitle();
+    console.log("开始刷新UI...");
+    refreshUI();
+    console.log("UI刷新完成");
     
-    // 更新状态栏
-    updateStatusBar(files);
+    // 更新窗口标题
+    setWindowTitle(getFileNameFromPath(archivePath));
+    
+    showSuccess(`成功打开压缩包: ${getFileNameFromPath(archivePath)}`);
   } catch (error) {
     console.error('打开压缩包失败:', error);
     showError(`打开压缩包失败: ${error}`);
@@ -211,188 +212,54 @@ async function openArchive(archivePath: string) {
   }
 }
 
-// 更新路径导航UI
-function updatePathNavigation() {
-  const navPath = document.querySelector('.nav-path');
-  if (!navPath) return;
+// 刷新UI，根据当前状态更新所有UI组件
+function refreshUI() {
+  const currentFolder = navigationHistory.getCurrentPath();
+  console.log(`刷新UI，当前文件夹: "${currentFolder}"`);
   
-  // 清空现有路径项
-  navPath.innerHTML = '';
+  // 过滤并排序当前文件夹下的文件
+  const filteredFiles = filterFilesByFolder(currentFiles, currentFolder);
+  console.log(`过滤后文件数量: ${filteredFiles.length}`);
   
-  // 添加压缩包根路径
-  const archiveName = currentArchivePath.split(/[\/\\]/).pop() || '';
+  const sortedFiles = sortFiles(filteredFiles);
+  console.log(`排序后准备显示文件数量: ${sortedFiles.length}`);
   
-  const archiveElement = document.createElement('span');
-  archiveElement.className = 'path-item path-archive';
-  archiveElement.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 8v13H3V8"></path>
-      <path d="M1 3h22v5H1z"></path>
-      <path d="M10 12h4"></path>
-    </svg>
-    <span>${archiveName}</span>
-  `;
-  
-  // 点击压缩包名称返回根目录
-  archiveElement.addEventListener('click', () => {
-    navigateToFolder("");
-  });
-  
-  navPath.appendChild(archiveElement);
-  
-  // 如果在子文件夹中，添加路径
-  if (currentFolder) {
-    const folders = currentFolder.split('/').filter(Boolean);
-    let currentPath = '';
-    
-    folders.forEach((folder) => {
-      // 添加分隔符
-      const separator = document.createElement('span');
-      separator.className = 'path-separator';
-      separator.textContent = '>';
-      navPath.appendChild(separator);
-      
-      // 添加文件夹路径
-      currentPath += folder + '/';
-      const folderElement = document.createElement('span');
-      folderElement.className = 'path-item';
-      folderElement.textContent = folder;
-      
-      // 设置点击事件导航到该文件夹
-      const pathToNavigate = currentPath;
-      folderElement.addEventListener('click', () => {
-        navigateToFolder(pathToNavigate);
-      });
-      
-      navPath.appendChild(folderElement);
-    });
+  if (sortedFiles.length === 0) {
+    console.log("警告: 没有文件可显示!");
+    if (currentFiles.length > 0) {
+      console.log("但是currentFiles中有文件，可能是过滤逻辑问题");
+      console.log("currentFiles示例:", currentFiles.slice(0, 3));
+    }
   }
-}
-
-// 显示文件列表
-function updateFileList(files: FileItem[]) {
-  const fileListBody = document.querySelector('.file-list-body');
-  if (!fileListBody) return;
   
-  // 创建文档片段进行离线DOM操作
-  const fragment = document.createDocumentFragment();
-  
-  // 筛选当前文件夹下的文件和直接子文件夹
-  const currentFiles = files.filter(file => {
-    // 移除压缩包根路径
-    const relativePath = file.name.replace(/^\/\/|\/$/, ''); // 去除开头和结尾的斜杠
-    const currentFolderNormalized = currentFolder.replace(/^\/\/|\/$/, ''); // 去除开头和结尾的斜杠
-    
-    if (currentFolderNormalized === '') {
-      // 根目录：只显示没有路径分隔符或者只有一层路径的文件/文件夹
-      return !relativePath.includes('/');
-    } else {
-      // 子文件夹：
-      // 1. 必须以当前文件夹路径开头
-      // 2. 路径长度必须比当前文件夹长
-      // 3. 移除当前文件夹路径后，剩余部分不能再包含路径分隔符
-      return relativePath.startsWith(currentFolderNormalized + '/') && 
-             !relativePath.substring(currentFolderNormalized.length + 1).includes('/');
-    }
-  });
-  
-  // 排序：先文件夹，后文件，按名称排序
-  const sortedFiles = [...currentFiles].sort((a, b) => {
-    if (a.is_dir !== b.is_dir) {
-      return a.is_dir ? -1 : 1;  // 文件夹在前
-    }
-    return a.name.localeCompare(b.name);  // 按名称排序
-  });
-  
-  // 在替换内容前添加淡出效果
-  fileListBody.classList.add('fade-out');
-  
-  // 使用setTimeout延迟DOM操作，让淡出效果有时间显示
-  setTimeout(() => {
-    // 添加文件和文件夹到文档片段
-    sortedFiles.forEach(file => {
-      // 获取显示名称（移除路径前缀）
-      let displayName = file.name;
-      const currentFolderPrefix = currentFolder.replace(/^\/\/|\/$/, ''); // 去除开头和结尾的斜杠
-      if (currentFolderPrefix && displayName.startsWith(currentFolderPrefix + '/')) {
-        displayName = displayName.substring(currentFolderPrefix.length + 1);
+  // 更新文件列表
+  updateFileList(
+    sortedFiles, 
+    currentFolder, 
+    undefined, // 文件点击回调
+    file => {
+      // 文件双击处理
+      if (file.is_dir) {
+        navigateToFolder(file.name);
+      } else {
+        // 文件预览（后续实现）
+        showInfo(`预览功能尚未实现: ${file.name}`);
       }
-      displayName = displayName.replace(/\/$/, ''); // 移除末尾的斜杠
-      
-      const fileItem = document.createElement('div');
-      fileItem.className = 'file-item';
-      
-      // 根据是否为文件夹选择不同图标
-      const icon = file.is_dir 
-        ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-          </svg>`
-        : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-          </svg>`;
-      
-      fileItem.innerHTML = `
-        <div class="file-column file-name">
-          ${icon}
-          <span>${displayName}</span>
-        </div>
-        <div class="file-column">${formatDate(file.modified_date)}</div>
-        <div class="file-column">${file.type_name}</div>
-        <div class="file-column">${file.is_dir ? '-' : formatFileSize(file.size)}</div>
-      `;
-      
-      // 添加点击事件
-      fileItem.addEventListener('click', (e) => {
-        // 如果正在加载，阻止点击事件
-        if (isLoading) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        
-        // 清除所有选中状态
-        document.querySelectorAll('.file-item.selected').forEach(item => {
-          item.classList.remove('selected');
-        });
-        // 添加选中状态
-        fileItem.classList.add('selected');
-      });
-      
-      // 添加双击事件 - 如果是文件夹则进入，如果是文件则预览
-      fileItem.addEventListener('dblclick', (e) => {
-        // 如果正在加载，阻止双击事件
-        if (isLoading) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        
-        if (file.is_dir) {
-          // 导航到子文件夹
-          navigateToFolder(file.name);
-        } else {
-          // 文件预览（后续实现）
-          console.log(`预览文件: ${file.name}`);
-        }
-      });
-      
-      fragment.appendChild(fileItem);
-    });
-    
-    // 清空现有文件列表并添加新内容
-    fileListBody.innerHTML = '';
-    fileListBody.appendChild(fragment);
-    
-    // 添加淡入效果
-    fileListBody.classList.remove('fade-out');
-    fileListBody.classList.add('fade-in');
-    
-    // 淡入效果完成后移除类
-    setTimeout(() => {
-      fileListBody.classList.remove('fade-in');
-    }, 300);
-  }, 10); // 缩短延迟时间，减少感知延迟
+    }
+  );
+  
+  // 更新导航路径
+  updatePathNavigation(
+    currentFolder,
+    getFileNameFromPath(currentArchivePath),
+    navigateToFolder
+  );
+  
+  // 更新导航按钮状态
+  updateNavButtonsState();
+  
+  // 更新状态栏
+  updateStatusBar();
 }
 
 // 导航到指定文件夹
@@ -404,129 +271,53 @@ function navigateToFolder(folderPath: string) {
     return;
   }
   
-  // 更新当前文件夹路径
-  currentFolder = folderPath.endsWith('/') ? folderPath : folderPath + '/';
-  if (folderPath === '') {
-    currentFolder = ''; // 确保根目录为空字符串
-  }
+  // 标准化文件夹路径
+  const normalizedPath = normalizeFolderPath(folderPath);
   
   // 更新导航历史
-  if (currentPathIndex < pathHistory.length - 1) {
-    // 如果从历史中间导航，截断后面的历史
-    pathHistory = pathHistory.slice(0, currentPathIndex + 1);
-  }
+  navigationHistory.addPath(normalizedPath);
   
-  // 添加新路径到历史
-  pathHistory.push(currentFolder);
-  currentPathIndex = pathHistory.length - 1;
-  
-  // 更新UI
-  updatePathNavigation();
-  updateNavButtonsState();
-  
-  // 重新加载文件列表
-  reloadCurrentArchive();
+  // 刷新UI
+  refreshUI();
 }
 
-// 重新加载当前压缩包
-async function reloadCurrentArchive() {
-  if (!currentArchivePath) return;
+// 更新加载状态
+function updateLoadingStatus(loading: boolean, message: string = "") {
+  isLoading = loading;
+  setLoading(loading);
   
-  try {
-    updateLoadingStatus(true, "正在读取...");
-    
-    const files = await invoke<FileItem[]>('open_archive', { archivePath: currentArchivePath });
-    updateFileList(files);
-    updateStatusBar(files);
-  } catch (error) {
-    console.error('重新加载压缩包失败:', error);
-    showError(`重新加载压缩包失败: ${error}`);
-  } finally {
-    updateLoadingStatus(false);
+  const statusLeft = document.querySelector('.status-left');
+  if (statusLeft) {
+    if (loading) {
+      statusLeft.textContent = message;
+      
+      // 添加加载指示器
+      document.body.classList.add('loading');
+    } else {
+      document.body.classList.remove('loading');
+      updateStatusBar();
+    }
   }
 }
 
 // 更新状态栏信息
-function updateStatusBar(files: FileItem[]) {
+function updateStatusBar() {
   const statusLeft = document.querySelector('.status-left');
   const statusRight = document.querySelector('.status-right');
   
   if (!statusLeft || !statusRight) return;
   
-  // 计算当前文件夹下的文件数量和总大小
-  const currentFiles = files.filter(file => {
-    if (currentFolder === '') {
-      return !file.name.includes('/') || 
-             (file.name.split('/').filter(Boolean).length === 1 && file.name.endsWith('/'));
-    } else {
-      return file.name.startsWith(currentFolder) && 
-             (file.name === currentFolder || 
-              file.name.substring(currentFolder.length).split('/').filter(Boolean).length <= 1);
-    }
-  });
-  
-  const fileCount = currentFiles.length;
-  const totalSize = currentFiles.reduce((sum, file) => sum + file.size, 0);
-  
-  statusLeft.textContent = `${fileCount}个项目`;
-  statusRight.textContent = `总大小: ${formatFileSize(totalSize)}`;
-}
-
-// 更新窗口标题显示当前压缩包
-function updateArchiveTitle() {
-  const currentFile = document.getElementById('current-file');
-  if (currentFile) {
-    const archiveName = currentArchivePath.split(/[\/\\]/).pop() || '未打开文件';
-    currentFile.textContent = archiveName;
-  }
-}
-
-// 更新导航按钮状态
-function updateNavButtonsState() {
-  const backBtn = document.querySelector('.nav-btn[title="后退"]');
-  const forwardBtn = document.querySelector('.nav-btn[title="前进"]');
-  const upBtn = document.querySelector('.nav-btn[title="上一级"]');
-  
-  // 移除所有禁用状态
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    (btn as HTMLElement).classList.remove('disabled');
-  });
-  
-  if (backBtn) {
-    if (currentPathIndex > 0) {
-      backBtn.classList.remove('disabled');
-    } else {
-      backBtn.classList.add('disabled');
-    }
+  if (!currentArchivePath) {
+    statusLeft.textContent = '欢迎使用 Soar Zip';
+    statusRight.textContent = '版本: 0.1.0';
+    return;
   }
   
-  if (forwardBtn) {
-    if (currentPathIndex < pathHistory.length - 1) {
-      forwardBtn.classList.remove('disabled');
-    } else {
-      forwardBtn.classList.add('disabled');
-    }
-  }
+  const currentFolder = navigationHistory.getCurrentPath();
+  const stats = getFileStats(currentFiles, currentFolder);
   
-  if (upBtn) {
-    if (currentFolder !== '') {
-      upBtn.classList.remove('disabled');
-    } else {
-      upBtn.classList.add('disabled');
-    }
-  }
-  
-  // 如果正在加载，禁用所有导航按钮
-  if (isLoading) {
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      (btn as HTMLElement).classList.add('disabled');
-    });
-  }
-}
-
-// 显示错误信息
-function showError(message: string) {
-  alert(message); // 简单起见先使用alert，后续可以实现更好的错误提示UI
+  statusLeft.textContent = `${stats.count}个项目`;
+  statusRight.textContent = `总大小: ${formatFileSize(stats.totalSize)}`;
 }
 
 // 搜索功能设置
@@ -538,8 +329,6 @@ function setupSearch() {
   searchBtn?.addEventListener('click', () => {
     const searchText = (searchInput as HTMLInputElement)?.value;
     if (searchText) {
-      console.log(`搜索: ${searchText}`);
-      // 实现搜索逻辑
       performSearch(searchText);
     }
   });
@@ -549,8 +338,6 @@ function setupSearch() {
     if ((e as KeyboardEvent).key === 'Enter') {
       const searchText = (searchInput as HTMLInputElement)?.value;
       if (searchText) {
-        console.log(`搜索: ${searchText}`);
-        // 实现搜索逻辑
         performSearch(searchText);
       }
     }
@@ -559,28 +346,31 @@ function setupSearch() {
 
 // 执行搜索的函数
 function performSearch(query: string) {
-  // 这里实现具体的搜索逻辑
-  // 例如：在文件列表中过滤匹配的文件名
-  // 或者调用后端的搜索API
+  if (!currentArchivePath) {
+    showError('请先打开一个压缩包');
+    return;
+  }
   
-  // 示例：简单的前端过滤
-  const fileItems = document.querySelectorAll('.file-item');
-  let matchCount = 0;
+  const currentFolder = navigationHistory.getCurrentPath();
+  const filteredFiles = filterFilesByFolder(currentFiles, currentFolder);
   
-  fileItems.forEach(item => {
-    const fileName = item.querySelector('.file-name span')?.textContent;
-    if (fileName && fileName.toLowerCase().includes(query.toLowerCase())) {
-      (item as HTMLElement).style.display = 'flex';
-      matchCount++;
-    } else {
-      (item as HTMLElement).style.display = 'none';
-    }
+  // 在当前文件夹下搜索文件
+  const searchResults = filteredFiles.filter(file => {
+    const displayName = file.name.split('/').pop() || '';
+    return displayName.toLowerCase().includes(query.toLowerCase());
   });
+  
+  // 更新文件列表显示搜索结果
+  updateFileList(searchResults, currentFolder);
   
   // 更新状态栏
   const statusLeft = document.querySelector('.status-left');
   if (statusLeft) {
-    statusLeft.textContent = `找到 ${matchCount} 个匹配项`;
+    statusLeft.textContent = `找到 ${searchResults.length} 个匹配项`;
+  }
+  
+  if (searchResults.length === 0) {
+    showInfo(`未找到匹配"${query}"的文件`);
   }
 }
 
@@ -593,44 +383,57 @@ function setupNavButtons() {
   
   // 后退按钮点击
   backBtn?.addEventListener('click', () => {
-    if (currentPathIndex > 0) {
-      currentPathIndex--;
-      currentFolder = pathHistory[currentPathIndex];
-      reloadCurrentArchive();
-      updatePathNavigation();
-      updateNavButtonsState();
+    if (isLoading || !navigationHistory.canGoBack()) return;
+    
+    const prevPath = navigationHistory.getPreviousPath();
+    if (prevPath !== null) {
+      refreshUI();
     }
   });
   
   // 前进按钮点击
   forwardBtn?.addEventListener('click', () => {
-    if (currentPathIndex < pathHistory.length - 1) {
-      currentPathIndex++;
-      currentFolder = pathHistory[currentPathIndex];
-      reloadCurrentArchive();
-      updatePathNavigation();
-      updateNavButtonsState();
+    if (isLoading || !navigationHistory.canGoForward()) return;
+    
+    const nextPath = navigationHistory.getNextPath();
+    if (nextPath !== null) {
+      refreshUI();
     }
   });
   
   // 上一级按钮点击
   upBtn?.addEventListener('click', () => {
-    if (currentFolder !== '') {
-      const parentFolder = currentFolder.split('/').slice(0, -2).join('/') + (currentFolder.split('/').length > 2 ? '/' : '');
-      navigateToFolder(parentFolder);
+    if (isLoading) return;
+    
+    const currentPath = navigationHistory.getCurrentPath();
+    if (currentPath) {
+      const parentPath = navigationHistory.getParentPath(currentPath);
+      navigateToFolder(parentPath);
     }
   });
   
   // 刷新按钮点击
-  refreshBtn?.addEventListener('click', () => {
-    reloadCurrentArchive();
+  refreshBtn?.addEventListener('click', async () => {
+    if (isLoading || !currentArchivePath) return;
+    
+    try {
+      updateLoadingStatus(true, "正在刷新...");
+      
+      // 重新加载当前压缩包
+      const files = await openArchive(currentArchivePath);
+      currentFiles = files;
+      
+      // 刷新UI
+      refreshUI();
+      
+      showSuccess("刷新完成");
+    } catch (error) {
+      console.error('刷新失败:', error);
+      showError(`刷新失败: ${error}`);
+    } finally {
+      updateLoadingStatus(false);
+    }
   });
-}
-
-// 面包屑导航点击处理
-function setupPathNavigation() {
-  // 这部分逻辑已经在updatePathNavigation中实现
-  // 每次更新路径时会重新设置点击事件
 }
 
 // 工具栏按钮处理
@@ -658,9 +461,6 @@ function setupToolbarButtons() {
           }
           break;
         case '提取文件':
-          // 提取文件逻辑（后续实现）
-          showError('该功能正在开发中...');
-          break;
         case '剪切':
         case '复制':
         case '粘贴':
@@ -669,6 +469,7 @@ function setupToolbarButtons() {
         case '删除':
         case '新建文件夹':
         case '属性':
+          // 所有未实现的功能显示相同的错误信息
           showError('该功能正在开发中...');
           break;
       }
@@ -685,70 +486,14 @@ function setupLogoClick() {
       // 如果已经打开了压缩包，询问是否返回主页
       if (confirm('是否返回主页？当前压缩包将被关闭。')) {
         currentArchivePath = '';
+        currentFiles = [];
         showHomePage();
+        setWindowTitle('未打开文件');
+        updateStatusBar();
       }
     }
   });
 }
 
-// 文件项点击处理
-function setupFileItems() {
-  // 这部分逻辑已经在updateFileList中实现
-  // 每次更新文件列表时会重新设置点击事件
-}
-
-// 更新加载状态
-function updateLoadingStatus(loading: boolean, message: string = "") {
-  const statusLeft = document.querySelector('.status-left');
-  if (statusLeft) {
-    if (loading) {
-      statusLeft.textContent = message;
-      
-      // 添加加载指示器
-      document.body.classList.add('loading');
-      
-      // 禁用导航按钮
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        (btn as HTMLElement).classList.add('disabled');
-      });
-    } else {
-      document.body.classList.remove('loading');
-      
-      // 恢复导航按钮状态
-      updateNavButtonsState();
-    }
-  }
-}
-
-// 初始化
-window.addEventListener("DOMContentLoaded", () => {
-  // 设置窗口控制
-  setupWindowControls();
-  
-  // 设置菜单项
-  setupMenuItems();
-  
-  // 设置搜索功能
-  setupSearch();
-  
-  // 设置导航按钮
-  setupNavButtons();
-  
-  // 设置路径导航
-  setupPathNavigation();
-  
-  // 设置工具栏按钮
-  setupToolbarButtons();
-  
-  // 设置文件项
-  setupFileItems();
-  
-  // 设置主页按钮
-  setupHomeActions();
-  
-  // 设置logo点击
-  setupLogoClick();
-  
-  // 默认显示主页并隐藏工具栏
-  showHomePage();
-});
+// 初始化应用
+window.addEventListener("DOMContentLoaded", initializeApp);

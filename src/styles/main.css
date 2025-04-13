@@ -1,0 +1,25 @@
+/* 主样式文件 - 导入所有样式模块 */
+
+/* 导入基础样式 */
+@import "../styles.css";
+
+/* 导入组件样式 */
+@import "./notification.css";
+
+/* 空文件夹样式 */
+.empty-folder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  color: #999;
+  font-style: italic;
+}
+
+/* 文件项禁用状态 */
+.file-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+/* 添加更多自定义样式 */ 

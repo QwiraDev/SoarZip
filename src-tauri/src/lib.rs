@@ -6,6 +6,7 @@ use rfd::FileDialog;
 use std::collections::HashSet;
 use std::io::Write;
 use std::fs::File;
+use std::time::SystemTime;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
@@ -60,12 +61,13 @@ fn select_archive_file() -> Option<String> {
     file.and_then(|path| path.to_str().map(|s| s.to_string()))
 }
 
-fn save_debug_info(data: &str, filename: &str) {
-    if let Ok(mut file) = File::create(filename) {
-        if let Err(e) = file.write_all(data.as_bytes()) {
-            eprintln!("写入调试文件失败: {}", e);
-        }
-    }
+// 新增：简单的日志打印函数
+fn log_info(message: &str) {
+    println!("[SoarZip INFO] {}", message);
+}
+
+fn log_error(message: &str) {
+    eprintln!("[SoarZip ERROR] {}", message);
 }
 
 // 检查7z是否安装
@@ -166,13 +168,26 @@ fn check_7z_installed() -> Result<String, String> {
 
 #[tauri::command]
 fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
+    log_info(&format!("开始打开压缩包: {}", archive_path));
+    
     // 检查文件是否存在
     if !Path::new(archive_path).exists() {
-        return Err(format!("压缩包不存在: {}", archive_path));
+        let error_msg = format!("压缩包不存在: {}", archive_path);
+        log_error(&error_msg);
+        return Err(error_msg);
     }
     
     // 获取7-zip路径
-    let seven_zip_path = check_7z_installed()?;
+    let seven_zip_path = match check_7z_installed() {
+        Ok(path) => path,
+        Err(e) => {
+            let error_msg = format!("7-Zip路径错误: {}", e);
+            log_error(&error_msg);
+            return Err(e);
+        }
+    };
+    
+    log_info(&format!("使用7-Zip路径: {}", seven_zip_path));
     
     // 使用详细列表格式获取文件列表，包含完整属性
     #[cfg(target_os = "windows")]
@@ -182,7 +197,11 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         .stdout(std::process::Stdio::piped()) // 捕获标准输出
         .stderr(std::process::Stdio::piped()) // 捕获标准错误
         .output()
-        .map_err(|e| format!("执行7-Zip命令失败: {}", e))?;
+        .map_err(|e| {
+            let error_msg = format!("执行7-Zip命令失败: {}", e);
+            log_error(&error_msg);
+            error_msg
+        })?;
         
     #[cfg(not(target_os = "windows"))]
     let output = Command::new(&seven_zip_path)
@@ -190,23 +209,33 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         .stdout(std::process::Stdio::piped()) // 捕获标准输出
         .stderr(std::process::Stdio::piped()) // 捕获标准错误
         .output()
-        .map_err(|e| format!("执行7-Zip命令失败: {}", e))?;
+        .map_err(|e| {
+            let error_msg = format!("执行7-Zip命令失败: {}", e);
+            log_error(&error_msg);
+            error_msg
+        })?;
     
     if !output.status.success() {
         let error_message = String::from_utf8_lossy(&output.stderr);
-        return Err(format!(
+        let error_msg = format!(
             "7-Zip命令执行失败，退出代码: {}，错误信息: {}",
             output.status.code().unwrap_or(-1),
             error_message
-        ));
+        );
+        log_error(&error_msg);
+        return Err(error_msg);
     }
     
     let output_str = String::from_utf8_lossy(&output.stdout);
     let mut files = Vec::new();
     let mut processed_paths = HashSet::new();
     
-    // 保存debug信息
-    save_debug_info(&output_str, "7z_output.txt");
+    log_info("7-Zip命令成功执行并获取到输出。");
+    if output_str.len() < 200 { // 只打印较短的输出
+        log_info(&format!("7-Zip输出预览: {}...", output_str.chars().take(100).collect::<String>()));
+    } else {
+        log_info(&format!("7-Zip输出长度: {}", output_str.len()));
+    }
     
     // 解析详细列表输出
     let mut current_item: Option<FileItem> = None;
@@ -357,6 +386,12 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         }
         a.name.cmp(&b.name)
     });
+    
+    log_info(&format!("共解析出{}个文件项", files.len()));
+    // 可以选择性地打印一些解析出的文件信息用于调试
+    // for (i, file) in files.iter().enumerate().take(5) {
+    //     log_info(&format!("文件{}: {} (是否文件夹: {})", i, file.name, file.is_dir));
+    // }
     
     Ok(files)
 }
