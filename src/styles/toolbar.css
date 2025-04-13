@@ -1,0 +1,174 @@
+/* Toolbar Styles */
+.toolbar {
+  height: var(--toolbar-height);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Path Bar (First row of toolbar) */
+.path-bar {
+  height: var(--path-bar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border-color);
+  justify-content: space-between;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.nav-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--control-border-radius);
+  cursor: pointer;
+}
+
+.nav-btn:hover {
+  background-color: var(--hover-color);
+}
+
+.nav-btn:active {
+  background-color: var(--active-color);
+}
+
+.nav-btn.disabled { /* Moved .disabled here for specificity */
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.path-container {
+  flex: 1;
+  margin: 0 16px;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--control-border-radius);
+  padding: 0 10px;
+  height: 28px;
+  overflow: hidden; /* Prevent path overflow */
+}
+
+.nav-path {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.path-separator {
+  margin: 0 8px;
+  color: #999;
+}
+
+.path-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0 2px; /* Add some padding */
+}
+
+.path-archive {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--primary-color);
+}
+
+.path-item:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--control-border-radius);
+  padding: 0 4px;
+  height: 28px;
+  width: 200px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  height: 100%;
+  width: 100%;
+  font-size: 12px;
+  padding: 0 4px;
+  color: var(--text-color);
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--control-border-radius);
+  color: #666;
+}
+
+.search-btn:hover {
+  background-color: var(--hover-color);
+}
+
+/* Actions Bar (Second row of toolbar) */
+.actions-bar {
+  height: var(--actions-bar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  flex-wrap: wrap; /* Allow buttons to wrap if space is limited */
+  gap: 2px;
+}
+
+.tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  background: transparent;
+  border: none;
+  border-radius: var(--control-border-radius);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-color);
+  gap: 3px;
+  height: 42px;
+  min-width: 50px;
+}
+
+.tool-btn:hover {
+  background-color: var(--hover-color);
+}
+
+.tool-btn:active {
+  background-color: var(--active-color);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 32px;
+  background-color: var(--border-color);
+  margin: 0 4px;
+} 

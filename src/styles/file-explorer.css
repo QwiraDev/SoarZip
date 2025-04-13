@@ -1,0 +1,78 @@
+/* File Explorer Styles */
+.file-explorer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: white; /* Default background for the explorer */
+  transition: background-color 0.2s ease-in-out;
+}
+
+#file-browser {
+  flex: 1; /* Ensure it takes remaining space */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: white;
+}
+
+.file-list-header {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.file-list-column {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.file-list-body {
+  flex: 1;
+  overflow-y: auto;
+  transition: opacity 0.15s ease-in-out; /* Keep transition */
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  transition: background-color 0.15s ease-in-out; /* Keep transition */
+}
+
+.file-item:hover {
+  background-color: var(--hover-color);
+}
+
+.file-item.selected {
+  background-color: rgba(0, 120, 212, 0.1); /* Use accent color */
+}
+
+.file-column {
+  flex: 1;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .file-explorer, #file-browser {
+    background-color: #262626; /* Dark background for file explorer */
+  }
+} 

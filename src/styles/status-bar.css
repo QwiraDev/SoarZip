@@ -1,0 +1,17 @@
+/* Status Bar Styles */
+.status-bar {
+  height: var(--status-bar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: var(--bg-color);
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  color: #666; /* Consider a secondary text color variable */
+}
+
+.status-left,
+.status-right {
+  /* Add specific styles if needed, e.g., flex-basis */
+} 

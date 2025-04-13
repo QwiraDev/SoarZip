@@ -17,11 +17,15 @@ export interface FileItem {
  * @returns 选择的文件路径，如果取消则为 null
  */
 export async function selectArchiveFile(): Promise<string | null> {
+  console.log("[fileService] Attempting to open file selection dialog...");
   try {
-    return await invoke<string | null>('select_archive_file');
+    const result = await invoke<string | null>('select_archive_file');
+    console.log(`[fileService] File selection result: ${result}`);
+    return result;
   } catch (error) {
-    console.error('打开文件对话框失败:', error);
-    throw new Error(`打开文件对话框失败: ${error}`);
+    console.error('[fileService] 打开文件对话框失败:', error);
+    // Rethrow the error so the caller (e.g., openArchiveDialog in main.ts) can handle it
+    throw new Error(`打开文件对话框失败: ${error}`); 
   }
 }
 

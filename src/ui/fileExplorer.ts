@@ -71,22 +71,21 @@ export function updateFileList(
       console.log('renderBatch: 所有批次渲染完成');
       
       // 确保文件列表容器存在内容
-      if (fileListBody.childNodes.length === 0) {
+      if (fileListBody && fileListBody.childNodes.length === 0) {
         console.warn('警告: 渲染完成但文件列表为空，尝试直接添加文档片段');
-        fileListBody.appendChild(fragment);
+        fileListBody?.appendChild(fragment);
       }
-      
-      fileListBody.classList.remove('fade-out');
-      fileListBody.classList.add('fade-in');
+      fileListBody?.classList.remove('fade-out');
+      fileListBody?.classList.add('fade-in');
       
       // 淡入效果完成后移除类
       setTimeout(() => {
-        fileListBody.classList.remove('fade-in');
+        fileListBody?.classList.remove('fade-in');
       }, 300);
     }
     
     // 再次确认文件列表已添加到DOM
-    if (fileListBody.childNodes.length === 0 && files.length > 0) {
+    if (fileListBody?.childNodes.length === 0 && files.length > 0) {
       console.warn('警告: 文件列表仍然为空，强制重新渲染');
       const emergency_container = document.createElement('div');
       files.forEach(file => {

@@ -1,0 +1,55 @@
+:root {
+  --bg-color: #f9f9f9;
+  --text-color: #202020;
+  --border-color: #e0e0e0;
+  --primary-color: #0078d4;
+  --hover-color: #f0f0f0;
+  --active-color: #e5e5e5;
+  --titlebar-height: 38px;
+  --toolbar-height: 88px;
+  --path-bar-height: 38px;
+  --actions-bar-height: 50px;
+  --status-bar-height: 24px;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --window-control-hover: rgba(0, 0, 0, 0.05);
+  --window-control-active: rgba(0, 0, 0, 0.08);
+  --close-btn-hover: rgba(232, 17, 35, 0.9);
+  --font-family: "Segoe UI", system-ui, sans-serif;
+  --control-border-radius: 4px;
+  --accent-color: rgba(0, 120, 212, 0.8);
+  --card-bg-color: #ffffff;
+  --card-hover-color: #f5f5f5;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --menu-item-radius: 6px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #202020;
+    --text-color: #ffffff;
+    --border-color: #3a3a3a;
+    /* --primary-color: #0078d4; /* Primary color might need adjustment for dark mode contrast */
+    --hover-color: #2a2a2a;
+    --active-color: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --window-control-hover: rgba(255, 255, 255, 0.1);
+    --window-control-active: rgba(255, 255, 255, 0.15);
+    --card-bg-color: #262626;
+    --card-hover-color: #333333;
+  }
+} 

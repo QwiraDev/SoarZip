@@ -1,0 +1,116 @@
+/* Titlebar Styles */
+#titlebar {
+  height: var(--titlebar-height);
+  background-color: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border-color);
+  -webkit-app-region: drag; /* Allows dragging the window */
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  -webkit-app-region: drag;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  -webkit-app-region: drag;
+}
+
+.logo img {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
+.logo span {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.main-menu {
+  -webkit-app-region: drag; /* Allow dragging from menu area as well */
+}
+
+.main-menu ul {
+  display: flex;
+  list-style: none;
+}
+
+.menu-container {
+  position: relative;
+  margin: 0 2px;
+}
+
+.menu-item {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--menu-item-radius);
+  cursor: pointer;
+  -webkit-app-region: no-drag; /* Individual items should be clickable */
+  height: calc(var(--titlebar-height) - 12px);
+  display: flex;
+  align-items: center;
+}
+
+.menu-item:hover {
+  background-color: var(--hover-color);
+}
+
+.titlebar-center {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  -webkit-app-region: drag;
+}
+
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 2px;
+}
+
+.window-control {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  -webkit-app-region: no-drag; /* Controls are not draggable */
+  cursor: pointer;
+  margin: 3px;
+  border-radius: var(--control-border-radius);
+}
+
+.window-control:hover {
+  background-color: var(--window-control-hover);
+}
+
+.window-control:active {
+  background-color: var(--window-control-active);
+}
+
+#close-btn {
+  margin-right: -5px;
+}
+
+#close-btn:hover {
+  background-color: var(--close-btn-hover);
+  color: white;
+}
+
+#settings-btn {
+  width: 36px;
+} 

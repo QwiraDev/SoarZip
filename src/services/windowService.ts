@@ -7,10 +7,12 @@ import { invoke } from "@tauri-apps/api/core";
  * 最小化窗口
  */
 export async function minimizeWindow(): Promise<void> {
+  console.log("[windowService] Attempting to minimize window...");
   try {
     await invoke('minimize_window');
+    console.log("[windowService] Minimize window invoked successfully.");
   } catch (error) {
-    console.error('最小化窗口失败:', error);
+    console.error('[windowService] 最小化窗口失败:', error);
   }
 }
 
@@ -18,10 +20,12 @@ export async function minimizeWindow(): Promise<void> {
  * 最大化或还原窗口
  */
 export async function maximizeWindow(): Promise<void> {
+  console.log("[windowService] Attempting to maximize/restore window...");
   try {
     await invoke('maximize_window');
+    console.log("[windowService] Maximize/restore window invoked successfully.");
   } catch (error) {
-    console.error('最大化/还原窗口失败:', error);
+    console.error('[windowService] 最大化/还原窗口失败:', error);
   }
 }
 
@@ -29,10 +33,12 @@ export async function maximizeWindow(): Promise<void> {
  * 关闭窗口
  */
 export async function closeWindow(): Promise<void> {
+  console.log("[windowService] Attempting to close window...");
   try {
     await invoke('close_window');
+    // No log after successful close as the app might terminate
   } catch (error) {
-    console.error('关闭窗口失败:', error);
+    console.error('[windowService] 关闭窗口失败:', error);
   }
 }
 

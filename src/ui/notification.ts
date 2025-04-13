@@ -10,7 +10,7 @@ interface NotificationOptions {
 }
 
 const defaultOptions: NotificationOptions = {
-  duration: 5000,
+  duration: 3000,
   closable: true
 };
 
@@ -172,7 +172,7 @@ export function showWarning(message: string, options?: NotificationOptions): voi
  */
 export function showError(message: string, options?: NotificationOptions): void {
   showNotification(message, 'error', {
-    duration: 8000, // 错误通知显示时间更长
+    duration: 5000,
     ...options
   });
 } 

@@ -1,0 +1,54 @@
+/* Component Styles - Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--control-border-radius);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  min-width: 180px;
+  display: none;
+  z-index: 1000;
+  padding: 6px;
+  margin-top: 2px;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95); /* Consider variable for this */
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 16px;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  border-radius: var(--control-border-radius);
+  margin: 2px 0;
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-color);
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 6px 0;
+}
+
+/* Add other reusable component styles here */
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .dropdown-menu {
+    background-color: rgba(40, 40, 40, 0.95); /* Dark mode background */
+  }
+}
