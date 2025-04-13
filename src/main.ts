@@ -239,10 +239,10 @@ function refreshUI() {
     undefined, // 文件点击回调
     file => {
       // 文件双击处理
-      if (file.is_dir) {
-        navigateToFolder(file.name);
-      } else {
-        // 文件预览（后续实现）
+        if (file.is_dir) {
+          navigateToFolder(file.name);
+        } else {
+          // 文件预览（后续实现）
         showInfo(`预览功能尚未实现: ${file.name}`);
       }
     }
