@@ -10,7 +10,7 @@ export interface SettingsDependencies {
 /**
  * 设置设置按钮的处理程序
  */
-export function setupSettingsButton(dependencies: SettingsDependencies): void {
+export function setupSettingsButton(_dependencies: SettingsDependencies): void {
   console.log("Setting up settings button...");
   const settingsBtn = document.getElementById('settings-btn');
   

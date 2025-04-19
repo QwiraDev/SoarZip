@@ -11,8 +11,3 @@
   color: var(--text-secondary-color);
   flex-shrink: 0;
 }
-
-.status-left,
-.status-right {
-  /* Add specific styles if needed, e.g., flex-basis */
-} 

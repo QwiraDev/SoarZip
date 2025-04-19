@@ -1,6 +1,6 @@
 # Soar Zip
 
-[中文](readme_CN.md)
+[中文](README_CN.md)
 
 ---
 

@@ -68,3 +68,185 @@
   background-color: var(--dropdown-bg-color);
   border-color: var(--border-color);
 }
+
+/* 关于对话框样式 */
+.about-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--overlay-color);
+  z-index: 9000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.about-overlay.open {
+  opacity: 1;
+}
+
+.about-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 480px;
+  max-width: 90vw;
+  background-color: var(--card-bg-color);
+  border-radius: 10px;
+  box-shadow: var(--card-shadow);
+  z-index: 9001;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.about-dialog.open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.about-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.about-header h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.about-close-btn {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.about-close-btn:hover {
+  background-color: var(--hover-color);
+  transform: rotate(90deg);
+}
+
+.about-content {
+  padding: 24px;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-logo {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.about-logo img {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+}
+
+.about-info {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.about-info h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.about-info .version {
+  font-size: 14px;
+  margin: 8px 0;
+  color: var(--text-secondary-color);
+}
+
+.about-info .description {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.about-info .copyright {
+  font-size: 12px;
+  margin: 16px 0 0 0;
+  color: var(--text-secondary-color);
+}
+
+.about-tech-info {
+  padding: 16px;
+  background-color: var(--bg-lighter-color);
+  border-radius: 8px;
+  width: 100%;
+  margin: 0 0 8px 0;
+}
+
+.about-tech-info h4 {
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  color: var(--primary-color);
+}
+
+.about-tech-info ul {
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 13px;
+}
+
+.about-tech-info li {
+  margin-bottom: 6px;
+}
+
+.about-footer {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+}
+
+.about-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--bg-lighter-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.about-btn:hover {
+  background-color: var(--hover-color);
+}
+
+.about-primary-btn {
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  color: white;
+}
+
+.about-primary-btn:hover {
+  background-color: var(--primary-hover-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

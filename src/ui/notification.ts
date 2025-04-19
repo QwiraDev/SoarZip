@@ -1,53 +1,81 @@
 /**
- * 通知模块 - 用于显示各类通知和错误信息
+ * 通知模块 - (Absolute Position + Manual Animation V2)
  */
 
 type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
 interface NotificationOptions {
-  duration?: number; // 显示时长（毫秒）
-  closable?: boolean; // 是否可关闭
+  duration?: number; 
+  closable?: boolean; 
+}
+
+interface ActiveNotification {
+  element: HTMLElement;
+  timeoutId: number | null;
+  currentBottom: number; // Stores the current 'bottom' value in px
 }
 
 const defaultOptions: NotificationOptions = {
-  duration: 3000,
-  closable: true
+  duration: 5000,
+  closable: true,
 };
 
-// 最大显示通知数量
 const MAX_NOTIFICATIONS = 5;
+const PUSH_UP_DURATION = 300; // ms
+const DROP_DOWN_DURATION = 300; // ms
+const ENTER_EXIT_DURATION = 300; // ms for slide in/out
+const NOTIFICATION_GAP = 10; // px
 
-/**
- * 创建并显示通知
- * @param message 通知内容
- * @param type 通知类型
- * @param options 配置选项
- */
-export function showNotification(
-  message: string, 
-  type: NotificationType = 'info', 
-  options: NotificationOptions = {}
-): void {
-  // 合并默认选项
-  const mergedOptions = { ...defaultOptions, ...options };
-  
-  // 创建通知容器（如果不存在）
+const activeNotifications: ActiveNotification[] = [];
+
+function getNotificationContainer(): HTMLElement {
   let container = document.getElementById('notification-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'notification-container';
     document.body.appendChild(container);
   }
-  
-  // 检查通知数量并移除最旧的通知（如果超过限制）
-  if (container.children.length >= MAX_NOTIFICATIONS) {
-    container.removeChild(container.firstChild as Node);
+  return container;
+}
+
+/**
+ * 创建并显示通知 - 严格按照要求实现
+ */
+export function showNotification(
+  message: string,
+  type: NotificationType = 'info',
+  options: NotificationOptions = {}
+): void {
+  const mergedOptions = { ...defaultOptions, ...options };
+  const container = getNotificationContainer();
+
+  // --- 处理旧通知 (Limit Check) --- 
+  if (activeNotifications.length >= MAX_NOTIFICATIONS) {
+    // 找到 currentBottom 最高的 (最顶部的)
+    let highestBottom = -1;
+    let oldestEntryIndex = -1;
+    for(let i = 0; i < activeNotifications.length; i++) {
+      if (activeNotifications[i].currentBottom > highestBottom) {
+        highestBottom = activeNotifications[i].currentBottom;
+        oldestEntryIndex = i;
+      }
+    }
+    if (oldestEntryIndex > -1) {
+        // 直接调用 removeNotification 处理移除和后续动画
+        removeNotification(activeNotifications[oldestEntryIndex].element);
+    }
   }
-  
-  // 创建通知元素
+
+  // --- 创建新通知元素 --- 
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
-  
+  // 初始样式：绝对定位，在容器外右侧，透明，初始 bottom 为 0
+  notification.style.position = 'absolute'; 
+  notification.style.right = '0';
+  notification.style.opacity = '0';
+  notification.style.transform = 'translateX(110%)';
+  notification.style.bottom = '0px'; // Start at the bottom
+
   // 图标选择
   let icon = '';
   switch (type) {
@@ -80,7 +108,7 @@ export function showNotification(
       break;
   }
   
-  // 构建通知内容
+  // 构建通知内容 + 进度条
   notification.innerHTML = `
     <div class="notification-icon">${icon}</div>
     <div class="notification-content">${message}</div>
@@ -92,87 +120,152 @@ export function showNotification(
         </svg>
       </button>
     ` : ''}
+    ${mergedOptions.duration && mergedOptions.duration > 0 ? '<div class="notification-progress"></div>' : ''}
   `;
   
-  // 添加到容器
+  // --- 计算与动画 --- 
+  // 1. 测量新通知高度 (临时添加)
+  notification.style.visibility = 'hidden'; 
   container.appendChild(notification);
-  
-  // 添加关闭事件
+  const notificationHeight = notification.offsetHeight;
+  container.removeChild(notification);
+  notification.style.visibility = '';
+  const pushUpDistance = notificationHeight + NOTIFICATION_GAP;
+
+  // 2. **向上推移现有通知**
+  activeNotifications.forEach(entry => {
+    const newBottom = entry.currentBottom + pushUpDistance;
+    entry.element.style.transition = `bottom ${PUSH_UP_DURATION}ms ease-out`;
+    entry.element.style.bottom = `${newBottom}px`;
+    entry.currentBottom = newBottom; // Update stored bottom value
+  });
+
+  // 3. 添加新通知到容器 (DOM order doesn't strictly matter now)
+  container.appendChild(notification);
+
+  // 4. 创建新通知的队列条目
+  const newNotificationEntry: ActiveNotification = {
+    element: notification,
+    timeoutId: null,
+    currentBottom: 0, // New notification starts at bottom 0
+  };
+
+  // 5. **触发新通知的进入动画 (滑入 + 淡入)**
+  void notification.offsetHeight; // Force reflow
+  notification.style.transition = `transform ${ENTER_EXIT_DURATION}ms ease-out, opacity ${ENTER_EXIT_DURATION}ms ease-out`;
+  notification.style.opacity = '1';
+  notification.style.transform = 'translateX(0)';
+
+  // --- 交互与生命周期 --- 
+  if (mergedOptions.duration && mergedOptions.duration > 0) {
+    const progressBar = notification.querySelector<HTMLElement>('.notification-progress');
+    if (progressBar) {
+      progressBar.style.animationDuration = `${mergedOptions.duration}ms`;
+    }
+    newNotificationEntry.timeoutId = window.setTimeout(() => {
+      removeNotification(notification);
+    }, mergedOptions.duration);
+  }
+
+  // 添加到队列
+  activeNotifications.push(newNotificationEntry);
+
   if (mergedOptions.closable) {
     const closeBtn = notification.querySelector('.notification-close');
     closeBtn?.addEventListener('click', () => {
-      closeNotification(notification);
+      if (newNotificationEntry.timeoutId !== null) {
+        clearTimeout(newNotificationEntry.timeoutId);
+      }
+      removeNotification(notification);
     });
   }
-  
-  // 显示动画
+
+  // 清理临时添加的 transition
   setTimeout(() => {
-    notification.classList.add('show');
-  }, 10);
-  
-  // 自动关闭
-  if (mergedOptions.duration && mergedOptions.duration > 0) {
-    setTimeout(() => {
-      closeNotification(notification);
-    }, mergedOptions.duration);
-  }
+      // Clean up push-up transition on existing elements
+      activeNotifications.forEach(entry => {
+          if (entry.element !== notification && entry.element.style.transition.includes("bottom")) {
+             entry.element.style.transition = ''; // Reset to default or remove
+          }
+      });
+       // Clean up enter transition on the new element
+      if (document.body.contains(notification)) {
+          notification.style.transition = ''; 
+      }
+  }, Math.max(PUSH_UP_DURATION, ENTER_EXIT_DURATION)); // Wait for the longer animation
 }
 
 /**
- * 关闭通知
- * @param notification 通知元素
+ * 移除通知并处理后续通知的下落动画
  */
-function closeNotification(notification: HTMLElement): void {
-  notification.classList.add('hide');
-  notification.classList.remove('show');
-  
-  // 等待动画结束后移除元素
+function removeNotification(notificationToRemoveElement: HTMLElement): void {
+  const indexToRemove = activeNotifications.findIndex(item => item.element === notificationToRemoveElement);
+  if (indexToRemove === -1) return; 
+
+  const removedEntry = activeNotifications[indexToRemove];
+  const removedHeight = removedEntry.element.offsetHeight; 
+  const dropDownDistance = removedHeight + NOTIFICATION_GAP;
+
+  // 1. 从队列中移除
+  activeNotifications.splice(indexToRemove, 1);
+  if (removedEntry.timeoutId !== null) {
+    clearTimeout(removedEntry.timeoutId);
+  }
+
+  // 2. **触发移除动画 (滑出 + 淡出)**
+  removedEntry.element.style.transition = `transform ${ENTER_EXIT_DURATION}ms ease-in, opacity ${ENTER_EXIT_DURATION * 0.8}ms ease-in`;
+  removedEntry.element.style.transform = 'translateX(110%)';
+  removedEntry.element.style.opacity = '0';
+
+  // 3. **处理上方（currentBottom 更高）通知的下落动画**
+  activeNotifications.forEach(entry => {
+      if (entry.currentBottom > removedEntry.currentBottom) {
+          const newBottom = entry.currentBottom - dropDownDistance;
+          entry.element.style.transition = `bottom ${DROP_DOWN_DURATION}ms ease-out`;
+          entry.element.style.bottom = `${newBottom}px`;
+          entry.currentBottom = newBottom;
+      }
+  });
+
+  // 4. 移除动画结束后从 DOM 移除元素
   setTimeout(() => {
-    notification.remove();
-    
-    // 如果没有更多通知，移除容器
+    removedEntry.element.remove();
+    // 检查容器是否为空
     const container = document.getElementById('notification-container');
-    if (container && container.children.length === 0) {
+    if (container && container.children.length === 0 && activeNotifications.length === 0) {
       container.remove();
     }
-  }, 300);
+  }, ENTER_EXIT_DURATION);
+
+  // 5. 清理下落动画的 transition
+   setTimeout(() => {
+      activeNotifications.forEach(entry => {
+          // If this element was involved in the dropdown animation
+          if (entry.currentBottom > removedEntry.currentBottom - dropDownDistance && // check if it could have dropped
+              entry.element.style.transition.includes("bottom")) { 
+             entry.element.style.transition = ''; // Reset to default or remove
+          }
+      });
+  }, DROP_DOWN_DURATION); // Wait for drop down to finish
 }
 
-/**
- * 显示成功通知
- * @param message 通知内容
- * @param options 配置选项
- */
+// --- Helper Functions --- 
+
 export function showSuccess(message: string, options?: NotificationOptions): void {
   showNotification(message, 'success', options);
 }
 
-/**
- * 显示信息通知
- * @param message 通知内容
- * @param options 配置选项
- */
 export function showInfo(message: string, options?: NotificationOptions): void {
   showNotification(message, 'info', options);
 }
 
-/**
- * 显示警告通知
- * @param message 通知内容
- * @param options 配置选项
- */
 export function showWarning(message: string, options?: NotificationOptions): void {
   showNotification(message, 'warning', options);
 }
 
-/**
- * 显示错误通知
- * @param message 通知内容
- * @param options 配置选项
- */
 export function showError(message: string, options?: NotificationOptions): void {
   showNotification(message, 'error', {
-    duration: 5000,
+    duration: 8000, // 错误信息持续时间长一点
     ...options
   });
 } 

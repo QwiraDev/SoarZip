@@ -1,51 +1,80 @@
-/* 通知样式 */
+/* 通知样式 - Absolute Positioning 版 */
 #notification-container {
   position: fixed;
   bottom: 16px;
   right: 16px;
   z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   max-width: 360px;
-  max-height: calc(5 * 76px); /* 最多显示5条消息 */
-  overflow: hidden; /* 隐藏滚动条 */
-  padding-right: 8px;
+  width: 90%; 
+  pointer-events: none; 
+  /* Height will be determined by absolute children */
+  /* No flex properties needed */
 }
 
 .notification {
-  display: flex;
+  position: absolute; /* 使用绝对定位 */
+  right: 0; /* Pinned to the right of the container */
+  bottom: 0; /* Initial bottom will be set by JS */
+  display: flex; 
   align-items: flex-start;
   padding: 12px 16px;
   border-radius: 6px;
   background-color: var(--card-bg-color);
   box-shadow: var(--card-shadow);
-  transform: translateX(120%);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  max-width: 100%;
-  min-width: 280px;
-  margin-bottom: 8px;
+  width: 100%; 
   color: var(--text-color);
   border: 1px solid var(--border-color);
-}
+  overflow: hidden; 
+  pointer-events: auto; 
+  /* margin-bottom: 10px; */ /* No margin needed with absolute positioning */
 
-.notification.show {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.notification.hide {
-  transform: translateX(120%);
+  /* Initial animation state (set by JS, but good fallback) */
   opacity: 0;
+  transform: translateX(110%); 
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, bottom 0.3s ease-out; /* Default transitions */
 }
 
+/* REMOVE previous enter/exit classes */
+/* .notification.enter-active { ... } */
+/* .notification.exit-active { ... } */
+
+
+/* --- 进度条 --- */
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background-color: rgba(var(--primary-color-rgb), 0.2);
+  transform-origin: left;
+}
+
+.notification-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%; 
+  background-color: var(--primary-color);
+  animation: progress-countdown linear forwards;
+  animation-duration: inherit; 
+}
+
+@keyframes progress-countdown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* --- 其他样式 (保持不变) --- */
 .notification-icon {
   margin-right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 2px; /* 微调图标垂直对齐 */
 }
 
 .notification-content {
@@ -74,37 +103,32 @@
   background-color: var(--hover-color);
 }
 
-/* 不同类型的通知样式 */
-.notification-info {
-  border-left: 4px solid var(--primary-color);
-}
-
 .notification-info .notification-icon {
   color: var(--primary-color);
 }
-
-.notification-success {
-  border-left: 4px solid #0f9d58;
+.notification-info .notification-progress::after {
+  background-color: var(--primary-color);
 }
 
 .notification-success .notification-icon {
   color: #0f9d58;
 }
-
-.notification-warning {
-  border-left: 4px solid #ff9800;
+.notification-success .notification-progress::after {
+  background-color: #0f9d58;
 }
 
 .notification-warning .notification-icon {
   color: #ff9800;
 }
-
-.notification-error {
-  border-left: 4px solid #d32f2f;
+.notification-warning .notification-progress::after {
+  background-color: #ff9800;
 }
 
 .notification-error .notification-icon {
   color: #d32f2f;
+}
+.notification-error .notification-progress::after {
+  background-color: #d32f2f;
 }
 
 /* 深色模式适配 (移除旧的媒体查询) */

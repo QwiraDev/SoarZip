@@ -41,100 +41,148 @@ function createSettingsPanel(): HTMLElement {
   const content = document.createElement('div');
   content.className = 'settings-content';
   
-  // 主题设置部分
-  const themeSection = document.createElement('div');
-  themeSection.className = 'settings-section';
+  // 主侧边栏导航
+  const settingsContainer = document.createElement('div');
+  settingsContainer.className = 'settings-container';
   
-  const themeTitle = document.createElement('h3');
-  themeTitle.textContent = '外观';
-  themeSection.appendChild(themeTitle);
+  // 侧边栏导航
+  const sidebar = document.createElement('div');
+  sidebar.className = 'settings-sidebar';
   
-  // 主题选择器
-  const themeSelector = document.createElement('div');
-  themeSelector.className = 'theme-selector';
+  const navItems = [
+    { id: 'appearance', label: '外观', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>' },
+    { id: 'general', label: '常规', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>' },
+    { id: 'advanced', label: '高级', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>' }
+  ];
+  
+  navItems.forEach(item => {
+    const navItem = document.createElement('div');
+    navItem.className = `settings-nav-item ${item.id === 'appearance' ? 'active' : ''}`;
+    navItem.dataset.section = item.id;
+    
+    const icon = document.createElement('span');
+    icon.className = 'settings-nav-icon';
+    icon.innerHTML = item.icon;
+    
+    const label = document.createElement('span');
+    label.className = 'settings-nav-label';
+    label.textContent = item.label;
+    
+    navItem.appendChild(icon);
+    navItem.appendChild(label);
+    
+    navItem.addEventListener('click', () => {
+      // 激活点击的导航项
+      document.querySelectorAll('.settings-nav-item').forEach(nav => {
+        nav.classList.remove('active');
+      });
+      navItem.classList.add('active');
+      
+      // 显示对应的设置部分
+      document.querySelectorAll('.settings-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`settings-${item.id}`)?.classList.add('active');
+    });
+    
+    sidebar.appendChild(navItem);
+  });
+  
+  // 主设置区域
+  const mainContent = document.createElement('div');
+  mainContent.className = 'settings-main-content';
+  
+  // 外观设置部分
+  const appearanceSection = document.createElement('div');
+  appearanceSection.id = 'settings-appearance';
+  appearanceSection.className = 'settings-section active';
+  
+  const appearanceTitle = document.createElement('h3');
+  appearanceTitle.textContent = '外观';
+  appearanceSection.appendChild(appearanceTitle);
+  
+  // 主题选择下拉菜单
+  const themeFormGroup = document.createElement('div');
+  themeFormGroup.className = 'settings-form-group';
+  
+  const themeLabel = document.createElement('label');
+  themeLabel.htmlFor = 'theme-select';
+  themeLabel.textContent = '主题模式';
+  
+  const themeSelect = document.createElement('select');
+  themeSelect.id = 'theme-select';
+  themeSelect.className = 'settings-select';
   
   const currentTheme = loadSavedTheme();
   
-  const themes: Array<{value: ThemeMode, label: string, icon: string}> = [
-    {
-      value: 'light',
-      label: '浅色模式',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
-    },
-    {
-      value: 'dark',
-      label: '深色模式',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
-    },
-    {
-      value: 'system',
-      label: '跟随系统',
-      icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>`
-    }
+  const themes: Array<{value: ThemeMode, label: string}> = [
+    { value: 'light', label: '浅色模式' },
+    { value: 'dark', label: '深色模式' },
+    { value: 'system', label: '跟随系统' }
   ];
   
   themes.forEach(theme => {
-    const option = document.createElement('div');
-    option.className = `theme-option ${theme.value === currentTheme ? 'selected' : ''}`;
-    option.dataset.theme = theme.value;
-    option.setAttribute('title', theme.label);
-    
-    const icon = document.createElement('span');
-    icon.className = 'theme-icon';
-    icon.innerHTML = theme.icon;
-    
-    const label = document.createElement('span');
-    label.className = 'theme-label';
-    label.textContent = theme.label;
-    
-    option.appendChild(icon);
-    option.appendChild(label);
-    
-    option.addEventListener('click', () => selectTheme(theme.value as ThemeMode));
-    
-    themeSelector.appendChild(option);
+    const option = document.createElement('option');
+    option.value = theme.value;
+    option.textContent = theme.label;
+    if (theme.value === currentTheme) {
+      option.selected = true;
+    }
+    themeSelect.appendChild(option);
   });
+  
+  themeSelect.addEventListener('change', () => {
+    selectTheme(themeSelect.value as ThemeMode);
+  });
+  
+  themeFormGroup.appendChild(themeLabel);
+  themeFormGroup.appendChild(themeSelect);
   
   const themeDescription = document.createElement('p');
   themeDescription.className = 'settings-description';
   themeDescription.textContent = '选择您喜欢的界面主题。系统模式将根据您的系统设置自动切换明暗主题。';
   
-  themeSection.appendChild(themeSelector);
-  themeSection.appendChild(themeDescription);
-  content.appendChild(themeSection);
+  appearanceSection.appendChild(themeFormGroup);
+  appearanceSection.appendChild(themeDescription);
+  mainContent.appendChild(appearanceSection);
   
-  // 添加其他设置部分的占位符 (未来可扩展)
-  const otherSection = document.createElement('div');
-  otherSection.className = 'settings-section';
+  // 常规设置部分
+  const generalSection = document.createElement('div');
+  generalSection.id = 'settings-general';
+  generalSection.className = 'settings-section';
   
-  const otherTitle = document.createElement('h3');
-  otherTitle.textContent = '关于';
-  otherSection.appendChild(otherTitle);
+  const generalTitle = document.createElement('h3');
+  generalTitle.textContent = '常规';
+  generalSection.appendChild(generalTitle);
   
-  const aboutContent = document.createElement('div');
-  aboutContent.className = 'about-content';
-  aboutContent.innerHTML = `
-    <p>Soar Zip 版本: 0.1.0</p>
-    <p>高效、安全的压缩文件管理工具</p>
-    <p class="copyright">© 2025 QwiraDev. 保留所有权利。</p>
-  `;
+  const placeholderGeneral = document.createElement('p');
+  placeholderGeneral.className = 'settings-empty-placeholder';
+  placeholderGeneral.textContent = '此部分的设置尚未实现';
+  generalSection.appendChild(placeholderGeneral);
   
-  otherSection.appendChild(aboutContent);
-  content.appendChild(otherSection);
+  mainContent.appendChild(generalSection);
   
+  // 高级设置部分
+  const advancedSection = document.createElement('div');
+  advancedSection.id = 'settings-advanced';
+  advancedSection.className = 'settings-section';
+  
+  const advancedTitle = document.createElement('h3');
+  advancedTitle.textContent = '高级';
+  advancedSection.appendChild(advancedTitle);
+  
+  const placeholderAdvanced = document.createElement('p');
+  placeholderAdvanced.className = 'settings-empty-placeholder';
+  placeholderAdvanced.textContent = '高级设置功能尚未实现';
+  advancedSection.appendChild(placeholderAdvanced);
+  
+  mainContent.appendChild(advancedSection);
+  
+  // 组装设置容器
+  settingsContainer.appendChild(sidebar);
+  settingsContainer.appendChild(mainContent);
+  content.appendChild(settingsContainer);
   panel.appendChild(content);
-  
-  // 创建底部按钮
-  const footer = document.createElement('div');
-  footer.className = 'settings-footer';
-  
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'settings-save-btn';
-  saveBtn.textContent = '关闭';
-  saveBtn.addEventListener('click', hideSettingsPanel);
-  
-  footer.appendChild(saveBtn);
-  panel.appendChild(footer);
   
   return panel;
 }
@@ -143,18 +191,6 @@ function createSettingsPanel(): HTMLElement {
  * 选择主题
  */
 function selectTheme(theme: ThemeMode): void {
-  // 更新选中状态
-  const options = document.querySelectorAll('.theme-option');
-  options.forEach(option => {
-    if (option instanceof HTMLElement) {
-      if (option.dataset.theme === theme) {
-        option.classList.add('selected');
-      } else {
-        option.classList.remove('selected');
-      }
-    }
-  });
-  
   // 应用主题
   applyTheme(theme);
   
@@ -186,13 +222,6 @@ export function showSettingsPanel(): void {
   overlay.className = 'settings-overlay';
   overlay.addEventListener('click', hideSettingsPanel);
   document.body.appendChild(overlay);
-  
-  // 移除预先设置动画的起始状态和强制重绘
-  // panel.style.opacity = '0';
-  // panel.style.transform = 'translate(-50%, -50%) scale(0.95)';
-  // overlay.style.opacity = '0';
-  // window.getComputedStyle(panel).opacity;
-  // window.getComputedStyle(overlay).opacity;
   
   // 显示动画 - 使用 requestAnimationFrame 确保 DOM 更新后再添加类
   requestAnimationFrame(() => {
@@ -230,9 +259,6 @@ export function hideSettingsPanel(): void {
       if (overlay.parentNode) {
         overlay.remove();
       }
-      // 确保即使在超时后，如果事件触发了，状态也是正确的
-      // isSettingsPanelOpen = false; // 移动到前面，防止重复关闭
-      panel.removeEventListener('transitionend', transitionHandler);
     };
 
     const transitionHandler = (e: TransitionEvent) => {
@@ -248,12 +274,8 @@ export function hideSettingsPanel(): void {
     setTimeout(() => {
       // 检查元素是否仍然存在，并且状态仍是未打开（防止在超时期间又被打开）
       if (!isSettingsPanelOpen && (panel.parentNode || overlay.parentNode)) {
-        console.warn("Settings panel transitionend event might not have fired. Removing elements via timeout.");
         removeElements();
       }
-    }, 400); // 稍长于过渡时间 (0.3s)
-  } else {
-    // 如果元素已经不存在，直接重置状态
-    isSettingsPanelOpen = false; 
+    }, 300);
   }
 } 

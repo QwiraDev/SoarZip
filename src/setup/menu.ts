@@ -1,4 +1,5 @@
 import { showError } from '../ui/notification';
+import { showAboutDialog } from '../ui/aboutDialog.ts';
 
 // Type for dependencies needed by menu setup
 export interface MenuDependencies {
@@ -50,6 +51,8 @@ export function setupMenuItems(deps: MenuDependencies): void {
         showError('该功能正在开发中...'); // showError can be imported directly
       } else if (itemText === '退出') {
         window.close(); // Directly use window API
+      } else if (itemText === '关于') {
+        showAboutDialog(); // 显示关于对话框
       }
       // Add handling for other menu items (Save, Save As, View options, etc.) here
     });

@@ -6,6 +6,8 @@ use rfd::FileDialog;
 use std::collections::HashSet;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+#[cfg(target_os = "windows")]
+use encoding_rs; // <-- 在 Windows 条件编译下导入
 
 // 文件项结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -213,7 +215,19 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         })?;
     
     if !output.status.success() {
-        let error_message = String::from_utf8_lossy(&output.stderr);
+        // 尝试根据平台解码 stderr
+        #[cfg(target_os = "windows")]
+        let (error_cow, _encoding_used, _had_errors) = encoding_rs::Encoding::for_label(b"GBK")
+            .unwrap_or(encoding_rs::UTF_8) // 如果GBK标签失败，则回退到UTF-8
+            .decode(&output.stderr);
+        #[cfg(target_os = "windows")]
+        let error_message = error_cow.as_ref();
+
+        #[cfg(not(target_os = "windows"))]
+        let error_message_cow = String::from_utf8_lossy(&output.stderr); // 其他平台假定UTF-8
+        #[cfg(not(target_os = "windows"))]
+        let error_message = error_message_cow.as_ref();
+        
         let error_msg = format!(
             "7-Zip命令执行失败，退出代码: {}，错误信息: {}",
             output.status.code().unwrap_or(-1),
@@ -223,7 +237,23 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         return Err(error_msg);
     }
     
-    let output_str = String::from_utf8_lossy(&output.stdout);
+    // 根据平台解码 stdout
+    #[cfg(target_os = "windows")]
+    let (output_cow, encoding_used, had_errors) = encoding_rs::Encoding::for_label(b"GBK") // Windows 尝试 GBK
+        .unwrap_or(encoding_rs::UTF_8) // 优雅地回退
+        .decode(&output.stdout);
+    #[cfg(target_os = "windows")]
+    let output_str = output_cow.as_ref();
+    #[cfg(target_os = "windows")]
+    if had_errors {
+        log_error(&format!("解码7-Zip输出时遇到错误 (使用编码: {}). 可能存在乱码.", encoding_used.name()));
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    let output_str_cow = String::from_utf8_lossy(&output.stdout); // macOS/Linux 假定 UTF-8
+    #[cfg(not(target_os = "windows"))]
+    let output_str = output_str_cow.as_ref();
+
     let mut files = Vec::new();
     let mut processed_paths = HashSet::new();
     
