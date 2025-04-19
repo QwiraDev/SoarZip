@@ -1,4 +1,4 @@
-use tauri::Window;
+use tauri::{Window, Manager};
 use std::process::Command;
 use serde::{Serialize, Deserialize};
 use std::path::Path;
@@ -69,135 +69,57 @@ fn log_error(message: &str) {
     eprintln!("[SoarZip ERROR] {}", message);
 }
 
-// 检查7z是否安装
-fn check_7z_installed() -> Result<String, String> {
+// Helper function to determine the resource path for 7z based on platform
+fn get_7z_resource_path() -> Result<String, String> {
     #[cfg(target_os = "windows")]
-    {
-        let default_path = r"C:\Program Files\7-Zip\7z.exe";
-        
-        // 首先检查默认路径
-        if Path::new(default_path).exists() {
-            return Ok(default_path.to_string());
-        }
-        
-        // 检查其他可能的路径
-        let other_paths = [
-            r"C:\Program Files (x86)\7-Zip\7z.exe",
-            r"C:\7-Zip\7z.exe"
-        ];
-        
-        for path in other_paths.iter() {
-            if Path::new(path).exists() {
-                return Ok(path.to_string());
-            }
-        }
-        
-        // 尝试通过系统路径查找
-        match Command::new("where").args(&["7z.exe"]).output() {
-            Ok(output) if output.status.success() => {
-                let path = String::from_utf8_lossy(&output.stdout);
-                let path = path.trim();
-                if !path.is_empty() && Path::new(path).exists() {
-                    return Ok(path.to_string());
-                }
-            },
-            _ => {}
-        }
-    }
-    
+    { Ok("binaries/win/7z.exe".to_string()) }
     #[cfg(target_os = "macos")]
-    {
-        // 在macOS上检查7z
-        let paths = [
-            "/usr/local/bin/7z",
-            "/opt/homebrew/bin/7z",
-            "/usr/bin/7z"
-        ];
-        
-        for path in paths.iter() {
-            if Path::new(path).exists() {
-                return Ok(path.to_string());
-            }
-        }
-        
-        // 尝试通过which命令查找
-        match Command::new("which").arg("7z").output() {
-            Ok(output) if output.status.success() => {
-                let path = String::from_utf8_lossy(&output.stdout);
-                let path = path.trim();
-                if !path.is_empty() && Path::new(path).exists() {
-                    return Ok(path.to_string());
-                }
-            },
-            _ => {}
-        }
-    }
-    
+    { Ok("binaries/macos/7z".to_string()) }
     #[cfg(target_os = "linux")]
-    {
-        // 在Linux上检查7z
-        let paths = [
-            "/usr/bin/7z",
-            "/usr/local/bin/7z",
-            "/bin/7z"
-        ];
-        
-        for path in paths.iter() {
-            if Path::new(path).exists() {
-                return Ok(path.to_string());
-            }
-        }
-        
-        // 尝试通过which命令查找
-        match Command::new("which").arg("7z").output() {
-            Ok(output) if output.status.success() => {
-                let path = String::from_utf8_lossy(&output.stdout);
-                let path = path.trim();
-                if !path.is_empty() && Path::new(path).exists() {
-                    return Ok(path.to_string());
-                }
-            },
-            _ => {}
-        }
-    }
-    
-    // 未找到7z
-    Err("未找到7-Zip工具。请安装7-Zip并确保其在系统路径中。".to_string())
+    { Ok("binaries/linux/7z".to_string()) }
+    #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
+    { Err("Unsupported operating system for bundled 7-Zip.".to_string()) }
 }
 
 #[tauri::command]
-fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
+fn open_archive(window: Window, archive_path: &str) -> Result<Vec<FileItem>, String> {
     log_info(&format!("开始打开压缩包: {}", archive_path));
     
-    // 检查文件是否存在
+    // Check if archive file exists
     if !Path::new(archive_path).exists() {
         let error_msg = format!("压缩包不存在: {}", archive_path);
         log_error(&error_msg);
         return Err(error_msg);
     }
     
-    // 获取7-zip路径
-    let seven_zip_path = match check_7z_installed() {
-        Ok(path) => path,
-        Err(e) => {
-            let error_msg = format!("7-Zip路径错误: {}", e);
-            log_error(&error_msg);
-            return Err(e);
-        }
-    };
+    // Get the path to the bundled 7-Zip executable
+    let resource_path_str = get_7z_resource_path()?;
     
-    log_info(&format!("使用7-Zip路径: {}", seven_zip_path));
+    // 使用正确的 Tauri API 获取资源目录
+    let app_handle = window.app_handle();
+    let resource_dir = app_handle.path().resource_dir()
+        .map_err(|_| "无法获取资源目录路径".to_string())?;
+    // 构建 7-Zip 完整路径
+    let seven_zip_path_buf = resource_dir.join(resource_path_str);
     
-    // 使用详细列表格式获取文件列表，包含完整属性
+    // Check if the resolved path actually exists
+    if !seven_zip_path_buf.exists() {
+        return Err(format!("捆绑的 7-Zip 可执行文件不存在于预期路径: {:?}", seven_zip_path_buf));
+    }
+    
+    let seven_zip_path = seven_zip_path_buf.to_string_lossy().to_string();
+    log_info(&format!("使用捆绑的 7-Zip 路径: {}", seven_zip_path));
+    
+    // Execute 7-Zip command using the bundled executable
     #[cfg(target_os = "windows")]
     let output = Command::new(&seven_zip_path)
         .args(&["l", "-slt", archive_path])
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW flag (Windows特有)
-        .stdout(std::process::Stdio::piped()) // 捕获标准输出
-        .stderr(std::process::Stdio::piped()) // 捕获标准错误
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .stdout(std::process::Stdio::piped()) 
+        .stderr(std::process::Stdio::piped()) 
         .output()
         .map_err(|e| {
-            let error_msg = format!("执行7-Zip命令失败: {}", e);
+            let error_msg = format!("执行捆绑的 7-Zip 命令失败: {}", e);
             log_error(&error_msg);
             error_msg
         })?;
@@ -205,11 +127,11 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
     #[cfg(not(target_os = "windows"))]
     let output = Command::new(&seven_zip_path)
         .args(&["l", "-slt", archive_path])
-        .stdout(std::process::Stdio::piped()) // 捕获标准输出
-        .stderr(std::process::Stdio::piped()) // 捕获标准错误
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
         .output()
         .map_err(|e| {
-            let error_msg = format!("执行7-Zip命令失败: {}", e);
+            let error_msg = format!("执行捆绑的 7-Zip 命令失败: {}", e);
             log_error(&error_msg);
             error_msg
         })?;
@@ -229,7 +151,7 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
         let error_message = error_message_cow.as_ref();
         
         let error_msg = format!(
-            "7-Zip命令执行失败，退出代码: {}，错误信息: {}",
+            "捆绑的 7-Zip 命令执行失败，退出代码: {}，错误信息: {}",
             output.status.code().unwrap_or(-1),
             error_message
         );
@@ -257,7 +179,7 @@ fn open_archive(archive_path: &str) -> Result<Vec<FileItem>, String> {
     let mut files = Vec::new();
     let mut processed_paths = HashSet::new();
     
-    log_info("7-Zip命令成功执行并获取到输出。");
+    log_info("捆绑的 7-Zip 命令成功执行并获取到输出。");
     if output_str.len() < 200 { // 只打印较短的输出
         log_info(&format!("7-Zip输出预览: {}...", output_str.chars().take(100).collect::<String>()));
     } else {
