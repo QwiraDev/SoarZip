@@ -255,31 +255,43 @@ export function showFileBrowser(): void {
   console.log('切换到文件浏览页面');
   const homePage = document.getElementById('home-page');
   const fileBrowser = document.getElementById('file-browser');
-  const toolbar = document.querySelector('.toolbar');
+  const toolbar = document.querySelector('.toolbar') as HTMLElement | null;
   
-  if (!homePage || !fileBrowser || !toolbar) {
-    console.error('找不到UI元素:', {
-      homePage: !!homePage,
-      fileBrowser: !!fileBrowser,
-      toolbar: !!toolbar
-    });
+  if (!homePage || !fileBrowser) {
+    console.error('找不到UI元素: homePage 或 fileBrowser');
     return;
   }
   
   homePage.style.display = 'none';
-  fileBrowser.style.display = 'flex';
-  (toolbar as HTMLElement).style.display = 'flex';
+  fileBrowser.style.display = 'flex'; // Use flex for the main browser layout
+
+  if (toolbar) {
+    console.log("showFileBrowser: Setting toolbar display to 'flex'");
+    toolbar.style.display = 'flex'; // Show toolbar
+  } else {
+    console.error("showFileBrowser: Toolbar element (.toolbar) not found!");
+  }
 }
 
 export function showHomePage(): void {
+  console.log('切换到主页页面');
   const homePage = document.getElementById('home-page');
   const fileBrowser = document.getElementById('file-browser');
-  const toolbar = document.querySelector('.toolbar');
+  const toolbar = document.querySelector('.toolbar') as HTMLElement | null;
   
-  if (homePage && fileBrowser && toolbar) {
-    homePage.style.display = 'flex';
-    fileBrowser.style.display = 'none';
-    (toolbar as HTMLElement).style.display = 'none';
+  if (!homePage || !fileBrowser) {
+    console.error('找不到UI元素: homePage 或 fileBrowser');
+    return;
+  }
+  
+  homePage.style.display = 'flex'; // Use flex for home page layout
+  fileBrowser.style.display = 'none';
+
+  if (toolbar) {
+    console.log("showHomePage: Setting toolbar display to 'none'");
+    toolbar.style.display = 'none'; // Hide toolbar
+  } else {
+    console.error("showHomePage: Toolbar element (.toolbar) not found!");
   }
 }
 
@@ -333,4 +345,9 @@ export function updatePathNavigation(
       navPath.appendChild(folderElement);
     });
   }
+}
+
+// Function to get the list of selected file paths
+export function getSelectedFiles(): string[] {
+  return Array.from(selectedFiles);
 } 

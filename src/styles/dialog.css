@@ -1,0 +1,113 @@
+/* src/styles/dialog.css */
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 确保在顶层 */
+  
+  /* Animation styles */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s, backdrop-filter 0.2s ease-in-out; /* Fade out quickly, transition blur */
+}
+
+.dialog-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out; /* Fade in, transition blur */
+}
+
+.dialog {
+  /* 使用正确的主题背景变量 */
+  background-color: var(--bg-color);
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  min-width: 400px; /* 对话框最小宽度 */
+  max-width: 80%; /* 最大宽度 */
+  color: var(--text-color);
+  transform: scale(0.95);
+  transition: transform 0.2s ease-in-out;
+}
+
+.dialog-overlay.visible .dialog {
+  transform: scale(1);
+}
+
+.dialog h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.4em;
+  color: var(--title-color);
+}
+
+.dialog p {
+  margin-bottom: 10px;
+}
+
+.dialog-path-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#extract-path-input {
+  flex-grow: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  margin-right: 10px;
+  font-size: 0.9em;
+  /* 让文本看起来更像标签而不是输入框 */
+  cursor: default;
+  overflow: hidden;      /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis (...) for overflow */
+  white-space: nowrap;   /* Prevent text wrapping */
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end; /* 按钮靠右对齐 */
+  gap: 10px; /* 按钮之间的间距 */
+}
+
+.dialog-button {
+  padding: 8px 15px;
+  /* Ensure all buttons have a visible border using the standard border color */
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--button-background);
+  color: var(--button-text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9em;
+}
+
+.dialog-button:hover {
+  background-color: var(--button-hover-background);
+  /* Optional: slightly darken border on hover for non-primary buttons */
+  /* border-color: var(--button-border-hover-color); */
+}
+
+.dialog-button.primary {
+  background-color: var(--accent-color);
+  color: var(--accent-text-color);
+  /* Primary button uses accent color for border */
+  border-color: var(--accent-color);
+}
+
+.dialog-button.primary:hover {
+  background-color: var(--accent-color-hover);
+  border-color: var(--accent-color-hover);
+}

@@ -46,11 +46,8 @@ export async function closeWindow(): Promise<void> {
  * 设置窗口标题
  * @param title 标题文本
  */
-export function setWindowTitle(title: string): void {
-  const currentFile = document.getElementById('current-file');
-  if (currentFile) {
-    currentFile.textContent = title;
-  }
+export async function setWindowTitle(title: string): Promise<void> {
+  await invoke('set_window_title', { title });
 }
 
 /**
@@ -59,5 +56,54 @@ export function setWindowTitle(title: string): void {
  * @returns 文件名
  */
 export function getFileNameFromPath(filePath: string): string {
-  return filePath.split(/[\/\\]/).pop() || '未打开文件';
+  if (!filePath) return '';
+  // 替换所有反斜杠为正斜杠，然后按正斜杠分割
+  const parts = filePath.replace(/\\/g, '/').split('/');
+  return parts[parts.length - 1];
+}
+
+/**
+ * 提取目录路径
+ * @param filePath 文件路径
+ * @returns 目录路径
+ */
+export function getDirectoryPath(filePath: string): string {
+  if (!filePath) return '';
+  const normalizedPath = filePath.replace(/\\/g, '/');
+  const lastSlashIndex = normalizedPath.lastIndexOf('/');
+  if (lastSlashIndex === -1) {
+    return ''; // Or perhaps '.' if it's just a filename?
+  }
+  return normalizedPath.substring(0, lastSlashIndex);
+}
+
+/**
+ * 提取文件名（不带扩展名）
+ * @param filePath 文件路径
+ * @returns 文件名（不带扩展名）
+ */
+export function getFileNameWithoutExtension(filePath: string): string {
+  const fileName = getFileNameFromPath(filePath);
+  const lastDotIndex = fileName.lastIndexOf('.');
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    return fileName; // No extension or hidden file like .myfile
+  }
+  return fileName.substring(0, lastDotIndex);
+}
+
+/**
+ * 生成默认解压路径 (同目录下同名文件夹)
+ * @param archivePath 压缩包路径
+ * @returns 默认解压路径
+ */
+export function getDefaultExtractPath(archivePath: string): string {
+  const dirPath = getDirectoryPath(archivePath);
+  const baseName = getFileNameWithoutExtension(archivePath);
+  // 在 Windows 和 macOS/Linux 上，路径分隔符可能不同
+  // 这里我们统一使用 /，Tauri 和 Rust 通常能更好地处理它
+  // 如果需要特定于操作系统的分隔符，可以使用 tauri/api/path 中的 join
+  if (!dirPath) {
+    return baseName; // 如果没有目录路径，直接返回基础名称
+  }
+  return `${dirPath}/${baseName}`;
 } 

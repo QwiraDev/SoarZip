@@ -1,5 +1,5 @@
 import { openArchive } from "../services/fileService";
-import { showError, showSuccess } from "../ui/notification";
+import { showError } from "../ui/notification";
 
 // Type for dependencies needed by navigation setup
 export interface NavigationDependencies {
@@ -72,7 +72,8 @@ export function setupNavButtons(deps: NavigationDependencies): void {
       // Refresh UI
       deps.refreshUI();
       
-      showSuccess("刷新完成");
+      // 移除刷新完成提示
+      // showSuccess("刷新完成"); 
     } catch (error) {
       console.error('刷新失败:', error);
       showError(`刷新失败: ${error}`);

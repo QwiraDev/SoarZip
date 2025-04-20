@@ -176,4 +176,36 @@
 
 .file-item.disabled:hover {
   background-color: transparent; 
-} */ 
+} */
+
+#file-explorer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take full height of its parent */
+    overflow: hidden; /* Prevent scrollbars on the container itself */
+}
+
+#path-navigation {
+    border-bottom: 1px solid var(--border-color);
+}
+
+#file-list-body tr:hover {
+    background-color: var(--list-hover-background);
+}
+
+/* Style for selected rows */
+#file-list-body tr.selected {
+    background-color: var(--list-active-selection-background); /* Use a distinct selection color */
+    color: var(--list-active-selection-foreground); /* Ensure text is readable on selection */
+}
+
+/* Ensure icons and text in selected rows also use the correct contrast color */
+#file-list-body tr.selected .icon,
+#file-list-body tr.selected .file-name {
+    color: var(--list-active-selection-foreground);
+}
+
+/* Optional: Slightly different hover for selected rows */
+#file-list-body tr.selected:hover {
+    background-color: var(--list-active-selection-background-hover); /* A slightly different shade for hover on selected */
+}

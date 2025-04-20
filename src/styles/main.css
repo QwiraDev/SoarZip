@@ -18,6 +18,7 @@
 
 /* Feature-specific Styles */
 @import './settings.css'; /* 新增：设置样式 */
+@import './dialog.css'; /* Import dialog styles */
 
 /* Specific styles previously in main.css - move to appropriate files if needed */
 

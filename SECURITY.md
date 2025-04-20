@@ -9,8 +9,6 @@ We are committed to ensuring the security of SoarZip. Security updates are provi
 | Latest  | :white_check_mark: |
 | < 1.0   | :x:                |
 
-(你可以根据你的版本发布策略调整这里)
-
 ## Reporting a Vulnerability
 
 The SoarZip team and community take all security vulnerabilities seriously. Thank you for improving the security of our project. We appreciate your efforts and responsible disclosure and will make every effort to acknowledge your contributions.
@@ -19,7 +17,7 @@ We prefer security reports to be submitted privately.
 
 **Please report security vulnerabilities by using GitHub's private vulnerability reporting feature.** You can find this option in the "Security" tab of our repository.
 
-Alternatively, if you prefer, you can report security vulnerabilities by emailing the lead maintainer directly at [your-email@example.com] (请替换成你的邮箱地址).
+Alternatively, if you prefer, you can report security vulnerabilities by emailing the lead maintainer directly at [qwiradev@163.com].
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 

@@ -30,6 +30,14 @@ export async function selectArchiveFile(): Promise<string | null> {
 }
 
 /**
+ * 打开目录选择对话框
+ * @returns 选择的目录路径，如果取消则为 null
+ */
+export async function selectDestinationFolder(): Promise<string | null> {
+  return await invoke<string | null>('select_destination_folder');
+}
+
+/**
  * 打开压缩包并获取其内容
  * @param archivePath 压缩包路径
  * @returns 压缩包内容列表
@@ -41,6 +49,24 @@ export async function openArchive(archivePath: string): Promise<FileItem[]> {
     console.error('打开压缩包失败:', error);
     throw new Error(`打开压缩包失败: ${error}`);
   }
+}
+
+/**
+ * 解压文件
+ * @param archivePath 压缩包路径
+ * @param filesToExtract 文件/文件夹相对于压缩包根目录的路径
+ * @param outputDirectory 解压目标目录
+ */
+export async function extractFiles(
+  archivePath: string,
+  filesToExtract: string[],
+  outputDirectory: string
+): Promise<void> {
+  await invoke<void>('extract_files', {
+    archivePath,
+    filesToExtract,
+    outputDirectory,
+  });
 }
 
 /**

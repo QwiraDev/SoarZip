@@ -71,7 +71,6 @@ jobs:
       if: matrix.platform == 'windows-latest'
       shell: pwsh
       run: |
-        # 方法1：直接下载官方便携版（推荐）
         $url = "https://www.7-zip.org/a/7z2409-x64.exe"
         $output = "$env:RUNNER_TEMP\\7z-installer.exe"
         Invoke-WebRequest -Uri $url -OutFile $output

@@ -60,6 +60,13 @@ fn select_archive_file() -> Option<String> {
     file.and_then(|path| path.to_str().map(|s| s.to_string()))
 }
 
+// 新增：选择目标文件夹命令
+#[tauri::command]
+fn select_destination_folder() -> Option<String> {
+    let folder = FileDialog::new().pick_folder();
+    folder.and_then(|path| path.to_str().map(|s| s.to_string()))
+}
+
 // 新增：简单的日志打印函数
 fn log_info(message: &str) {
     println!("[SoarZip INFO] {}", message);
@@ -345,6 +352,157 @@ fn open_archive(window: Window, archive_path: &str) -> Result<Vec<FileItem>, Str
     Ok(files)
 }
 
+// 新增：解压文件命令
+#[tauri::command]
+fn extract_files(
+    window: Window,
+    archive_path: String,
+    files_to_extract: Vec<String>, // 要解压的文件/文件夹路径列表 (相对于压缩包根目录)
+    output_directory: String,
+) -> Result<(), String> {
+    log_info(&format!(
+        "开始解压文件到: {}, 压缩包: {}",
+        output_directory, archive_path
+    ));
+    log_info(&format!("要解压的文件/文件夹: {:?}", files_to_extract));
+
+    // 检查压缩包是否存在
+    if !Path::new(&archive_path).exists() {
+        let error_msg = format!("压缩包不存在: {}", archive_path);
+        log_error(&error_msg);
+        return Err(error_msg);
+    }
+
+    // 检查输出目录是否存在，如果不存在则尝试创建
+    let output_path = Path::new(&output_directory);
+    if !output_path.exists() {
+        log_info(&format!("输出目录不存在，尝试创建: {}", output_directory));
+        if let Err(e) = std::fs::create_dir_all(output_path) {
+            let error_msg = format!("创建输出目录失败: {}, 错误: {}", output_directory, e);
+            log_error(&error_msg);
+            return Err(error_msg);
+        }
+        log_info(&format!("成功创建输出目录: {}", output_directory));
+    } else if !output_path.is_dir() {
+         let error_msg = format!("输出路径不是一个有效的目录: {}", output_directory);
+         log_error(&error_msg);
+         return Err(error_msg);
+    }
+
+    // 获取 7-Zip 路径
+    let resource_path_str = get_7z_resource_path()?;
+    let app_handle = window.app_handle();
+    let resource_dir = app_handle
+        .path()
+        .resource_dir()
+        .map_err(|_| "无法获取资源目录路径".to_string())?;
+    let seven_zip_path_buf = resource_dir.join(resource_path_str);
+
+    if !seven_zip_path_buf.exists() {
+        return Err(format!(
+            "捆绑的 7-Zip 可执行文件不存在于预期路径: {:?}",
+            seven_zip_path_buf
+        ));
+    }
+    let seven_zip_path = seven_zip_path_buf.to_string_lossy().to_string();
+    log_info(&format!("使用捆绑的 7-Zip 进行解压: {}", seven_zip_path));
+
+    // 构建 7-Zip 命令参数
+    // 基础命令: 7z x <archive_path> -o<output_directory> [files_to_extract...] -aoa
+    // 'x': 解压文件，保持目录结构
+    // '-o': 指定输出目录，注意 -o 和目录之间没有空格
+    // 'files_to_extract...': 可选参数，指定要解压的文件或目录
+    // '-aoa': Overwrite All existing files without prompt. (覆盖所有文件)
+    let mut args = vec![
+        "x".to_string(),
+        archive_path.clone(),
+        format!("-o{}", output_directory), // 注意这里没有空格
+        "-aoa".to_string(), // 覆盖模式
+    ];
+
+    // 如果提供了具体的文件/文件夹列表，则添加到参数中
+    // 注意：7zip 需要的是相对于压缩包内部的路径
+    if !files_to_extract.is_empty() {
+        for file in files_to_extract {
+            // 确保路径使用系统分隔符？(7zip通常能处理/) 但windows可能需要转换
+            // let os_specific_path = file.replace("/", &std::path::MAIN_SEPARATOR.to_string());
+            // args.push(os_specific_path);
+             args.push(file); // 尝试直接使用传入的路径，7zip对 '/' 的兼容性较好
+        }
+    }
+
+    log_info(&format!("执行 7-Zip 命令: {} {:?}", seven_zip_path, args));
+
+    // 执行 7-Zip 命令
+    #[cfg(target_os = "windows")]
+    let output_result = Command::new(&seven_zip_path)
+        .args(&args)
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .output();
+
+    #[cfg(not(target_os = "windows"))]
+    let output_result = Command::new(&seven_zip_path)
+        .args(&args)
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .output();
+
+    let output = output_result.map_err(|e| {
+        let error_msg = format!("执行捆绑的 7-Zip 解压命令失败: {}", e);
+        log_error(&error_msg);
+        error_msg
+    })?;
+
+    // 检查命令执行结果
+    if !output.status.success() {
+        #[cfg(target_os = "windows")]
+        let (error_cow, _, _) = encoding_rs::Encoding::for_label(b"GBK")
+            .unwrap_or(encoding_rs::UTF_8)
+            .decode(&output.stderr);
+        #[cfg(target_os = "windows")]
+        let error_message = error_cow.as_ref();
+
+        #[cfg(not(target_os = "windows"))]
+        let error_message_cow = String::from_utf8_lossy(&output.stderr);
+        #[cfg(not(target_os = "windows"))]
+        let error_message = error_message_cow.as_ref();
+
+        let error_msg = format!(
+            "捆绑的 7-Zip 解压命令执行失败，退出代码: {}，错误信息: {}",
+            output.status.code().unwrap_or(-1),
+            error_message.trim()
+        );
+        log_error(&error_msg);
+        return Err(error_msg);
+    }
+
+    // 打印部分成功输出信息 (stdout)
+    #[cfg(target_os = "windows")]
+    let (output_cow, _, _) = encoding_rs::Encoding::for_label(b"GBK")
+        .unwrap_or(encoding_rs::UTF_8)
+        .decode(&output.stdout);
+    #[cfg(target_os = "windows")]
+    let success_output = output_cow.as_ref();
+
+    #[cfg(not(target_os = "windows"))]
+    let success_output_cow = String::from_utf8_lossy(&output.stdout);
+    #[cfg(not(target_os = "windows"))]
+    let success_output = success_output_cow.as_ref();
+
+
+    log_info("捆绑的 7-Zip 解压命令成功执行。");
+    if success_output.len() < 500 { // 只打印较短的输出
+         log_info(&format!("7-Zip输出预览: {}", success_output.trim()));
+    } else {
+         log_info(&format!("7-Zip输出长度: {}", success_output.len()));
+    }
+
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -354,7 +512,9 @@ pub fn run() {
             maximize_window,
             close_window,
             select_archive_file,
-            open_archive
+            open_archive,
+            select_destination_folder,
+            extract_files
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
