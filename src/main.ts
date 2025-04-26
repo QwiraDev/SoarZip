@@ -93,6 +93,8 @@ import toolbarHtml from './ui/components/toolbar.html?raw';
 import fileExplorerHtml from './ui/components/file-explorer.html?raw';
 import statusBarHtml from './ui/components/status-bar.html?raw';
 import extractDialogHtml from './ui/components/extract-dialog.html?raw';
+import confirmDialogHtml from './ui/components/confirm-dialog.html?raw';
+import { invoke } from "@tauri-apps/api/core";
 
 /**
  * Loads all necessary UI components by inserting their pre-imported HTML content.
@@ -105,6 +107,16 @@ function loadAllComponents() { // Removed async as it's now synchronous
   loadComponent(fileExplorerHtml, 'file-explorer-placeholder', 'file-explorer.html');
   loadComponent(statusBarHtml, 'status-bar-placeholder', 'status-bar.html');
   loadComponent(extractDialogHtml, 'dialog-placeholder', 'extract-dialog.html');
+  
+  // Append the confirm dialog HTML to the body
+  const confirmDialogContainer = document.createElement('div');
+  confirmDialogContainer.innerHTML = confirmDialogHtml;
+  // Append each top-level element from the confirm dialog HTML to the body
+  // This prevents adding an extra wrapper div if confirmDialogHtml has a single root
+  while (confirmDialogContainer.firstChild) {
+    document.body.appendChild(confirmDialogContainer.firstChild);
+  }
+
   console.log("All UI components inserted.");
 }
 
@@ -159,7 +171,6 @@ async function initializeApp() { // Keep async for potential future async operat
   setupHomeActions({ openArchiveDialog });
   setupLogoClick({
     getArchivePath: () => currentArchivePath,
-    confirm: (msg) => window.confirm(msg),
     resetApp: () => {
       currentArchivePath = '';
       currentFiles = [];
@@ -172,9 +183,25 @@ async function initializeApp() { // Keep async for potential future async operat
   setupSettingsButton({});
   
   // --- Initial View Logic --- 
-  // Show home page on startup
-  showHomePage(); 
-  updateToolbarButtonsState(false); 
+  try {
+    console.log("Checking for initial file path from CLI...");
+    const initialPath = await invoke<string | null>('get_initial_file_path');
+    if (initialPath) {
+      console.log(`Initial file path received: ${initialPath}. Loading archive...`);
+      await loadArchive(initialPath);
+    } else {
+      console.log("No initial file path found. Showing home page.");
+      // Show home page on startup if no initial file path
+      showHomePage(); 
+      updateToolbarButtonsState(false); 
+    }
+  } catch (err) {
+    console.error("Error checking for initial file path:", err);
+    showError(`检查启动参数失败: ${err}`);
+    // Fallback to home page in case of error
+    showHomePage(); 
+    updateToolbarButtonsState(false); 
+  }
   
   // Initialize status bar content
   updateStatusBar();

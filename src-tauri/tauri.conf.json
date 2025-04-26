@@ -32,11 +32,48 @@
     ],
     "resources": [
       "binaries"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["zip"],
+        "name": "Zip Archive",
+        "mimeType": "application/zip",
+        "description": "Compressed Zip Archive"
+      },
+      {
+        "ext": ["7z"],
+        "name": "7z Archive",
+        "mimeType": "application/x-7z-compressed",
+        "description": "7z Archive"
+      },
+      {
+        "ext": ["rar"],
+        "name": "Rar Archive",
+        "mimeType": "application/x-rar-compressed",
+        "description": "Rar Archive"
+      },
+      {
+        "ext": ["tar"],
+        "name": "Tar Archive",
+        "mimeType": "application/x-tar",
+        "description": "Tar Archive"
+      }
     ]
   },
   "plugins": {
     "shell": {
       "open": true
+    },
+    "cli": {
+      "description": "Handles opening archive files passed as arguments.",
+      "args": [
+        {
+          "name": "filePath",
+          "index": 1,
+          "takesValue": true,
+          "description": "The path to the archive file to open."
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,7 @@
 // Import the logo image asset
 // Adjust the relative path if necessary based on your project structure
 import logoSrc from '../../src-tauri/icons/icon.png'; 
+import { showConfirmDialog } from '../ui/confirmDialog'; // Import the custom confirm dialog
 
 /**
  * Interface for dependencies needed by logo click handler
@@ -13,7 +14,6 @@ import logoSrc from '../../src-tauri/icons/icon.png';
  */
 export interface LogoClickDependencies {
   getArchivePath: () => string;
-  confirm: (message: string) => boolean;
   resetApp: () => void;
 }
 
@@ -39,12 +39,19 @@ export function setupLogoClick(deps: LogoClickDependencies): void {
   // Attach the click event listener
   logoElement?.addEventListener('click', () => {
     if (deps.getArchivePath()) {
-      // If an archive is open, ask for confirmation to return to home
-      if (deps.confirm('是否返回主页？当前压缩包将被关闭。')) {
-        deps.resetApp();
-      }
+      // If an archive is open, ask for confirmation using the custom dialog
+      showConfirmDialog(
+        '确认返回主页吗？当前压缩包的浏览进度将丢失。', 
+        () => {
+          // On confirm, call resetApp
+          deps.resetApp();
+        },
+        // On cancel, do nothing (optional cancel callback)
+        () => {
+          console.log('Return to home cancelled by user.');
+        }
+      );
     }
-    // If no archive is open, clicking the logo might do nothing or navigate to home directly
-    // Current behavior: only acts if an archive is open.
+    // If no archive is open, clicking the logo does nothing.
   });
 }
