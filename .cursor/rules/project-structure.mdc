@@ -1,0 +1,32 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 项目结构指南
+
+这是一个使用 Tauri 和 Vite 构建的应用程序。
+
+## 关键目录和文件
+
+### 前端 (`src`)
+
+- **入口点**: [src/main.ts](mdc:src/main.ts) 是前端应用程序的主要入口。
+- **用户界面**: [src/ui/](mdc:src/ui) 目录包含 UI 组件。
+- **工具函数**: [src/utils/](mdc:src/utils) 目录包含通用工具函数。
+- **样式**: [src/styles/](mdc:src/styles) 目录包含 CSS 或其他样式文件。
+- **设置**: [src/setup/](mdc:src/setup) 目录可能包含初始化或配置相关的代码。
+- **服务**: [src/services/](mdc:src/services) 目录可能包含与后端或其他外部服务交互的代码。
+
+### 后端 (`src-tauri`)
+
+- **Tauri 配置**: [src-tauri/tauri.conf.json](mdc:src-tauri/tauri.conf.json) 定义了 Tauri 应用程序的行为和特性。
+- **Rust 配置**: [src-tauri/Cargo.toml](mdc:src-tauri/Cargo.toml) 是 Rust 后端项目的配置文件。
+- **后端源码**: [src-tauri/src/](mdc:src-tauri/src) 目录包含 Rust 后端逻辑。
+
+### 根目录配置
+
+- **Node.js 配置**: [package.json](mdc:package.json) 定义了项目依赖和脚本。
+- **Vite 配置**: [vite.config.ts](mdc:vite.config.ts) 配置了 Vite 构建工具。
+- **TypeScript 配置**: [tsconfig.json](mdc:tsconfig.json) 配置了 TypeScript 编译器选项。
+

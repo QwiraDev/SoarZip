@@ -3,6 +3,10 @@
  * Logo设置模块 - 配置logo点击行为
  */
 
+// Import the logo image asset
+// Adjust the relative path if necessary based on your project structure
+import logoSrc from '../../src-tauri/icons/icon.png'; 
+
 /**
  * Interface for dependencies needed by logo click handler
  * Logo点击处理程序所需的依赖项接口
@@ -21,9 +25,19 @@ export interface LogoClickDependencies {
  *             - Logo点击操作所需的依赖项
  */
 export function setupLogoClick(deps: LogoClickDependencies): void {
-  const logo = document.querySelector('.logo');
-  
-  logo?.addEventListener('click', () => {
+  const logoElement = document.querySelector('.logo');
+  const logoImg = logoElement?.querySelector('img'); // Find the img tag within the logo element
+
+  // Set the image source dynamically
+  if (logoImg instanceof HTMLImageElement) {
+    logoImg.src = logoSrc;
+  } else if (logoElement) {
+    // Log an error if the img tag isn't found inside .logo
+    console.error('Could not find the <img> tag within the .logo element.');
+  }
+
+  // Attach the click event listener
+  logoElement?.addEventListener('click', () => {
     if (deps.getArchivePath()) {
       // If an archive is open, ask for confirmation to return to home
       if (deps.confirm('是否返回主页？当前压缩包将被关闭。')) {

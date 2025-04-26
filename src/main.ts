@@ -61,51 +61,51 @@ let isLoading = false;
 // --- Dynamic Component Loading --- 
 
 /**
- * Asynchronously loads an HTML component and inserts it into a placeholder element.
- * 异步加载HTML组件并将其插入到占位符元素中。
+ * Inserts HTML content into a placeholder element.
+ * 将HTML内容插入到占位符元素中。
  *
- * @param componentPath - The path to the HTML component file relative to the `src/ui/components/` directory.
- *                      - 相对于 `src/ui/components/` 目录的HTML组件文件路径。
- * @param placeholderId - The ID of the HTML element where the loaded component should be inserted.
- *                      - 应插入加载的组件的HTML元素的ID。
+ * @param htmlContent - The HTML string content to insert.
+ *                      - 要插入的HTML字符串内容。
+ * @param placeholderId - The ID of the HTML element where the content should be inserted.
+ *                      - 应插入内容的HTML元素的ID。
+ * @param componentName - A descriptive name for the component (for logging).
+ *                      - 组件的描述性名称（用于日志记录）。
  */
-async function loadComponent(componentPath: string, placeholderId: string) {
+function loadComponent(htmlContent: string, placeholderId: string, componentName: string) {
   try {
-    // Construct the path relative to the root for fetching
-    const fetchPath = `/src/ui/components/${componentPath}`;
-    // Use fetch to get the HTML content as text
-    const response = await fetch(fetchPath);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status} for ${fetchPath}`);
-    }
-    const htmlContent = await response.text();
-
     const placeholder = document.getElementById(placeholderId);
     if (placeholder) {
       placeholder.innerHTML = htmlContent;
-      console.log(`Successfully loaded component '${componentPath}' into #${placeholderId}`);
+      console.log(`Successfully inserted component '${componentName}' into #${placeholderId}`);
     } else {
-      console.error(`Placeholder element with ID '${placeholderId}' not found.`);
+      console.error(`Placeholder element with ID '${placeholderId}' not found for component '${componentName}'.`);
     }
   } catch (error) {
-    console.error(`Failed to load component '${componentPath}':`, error);
+    console.error(`Failed to insert component '${componentName}':`, error);
+    // Optionally show an error to the user if a critical component fails
+    // showError(`无法加载界面组件: ${componentName}`);
   }
 }
 
+// Import HTML content directly using Vite's ?raw suffix
+import titlebarHtml from './ui/components/titlebar.html?raw';
+import toolbarHtml from './ui/components/toolbar.html?raw';
+import fileExplorerHtml from './ui/components/file-explorer.html?raw';
+import statusBarHtml from './ui/components/status-bar.html?raw';
+import extractDialogHtml from './ui/components/extract-dialog.html?raw';
+
 /**
- * Loads all necessary UI components into their respective placeholders in `index.html`.
- * 将所有必需的UI组件加载到 `index.html` 中各自的占位符中。
+ * Loads all necessary UI components by inserting their pre-imported HTML content.
+ * 通过插入预先导入的HTML内容来加载所有必需的UI组件。
  */
-async function loadAllComponents() {
-  console.log("Loading UI components...");
-  await Promise.all([
-    loadComponent('titlebar.html', 'titlebar-placeholder'),
-    loadComponent('toolbar.html', 'toolbar-placeholder'),
-    loadComponent('file-explorer.html', 'file-explorer-placeholder'),
-    loadComponent('status-bar.html', 'status-bar-placeholder'),
-    loadComponent('extract-dialog.html', 'dialog-placeholder')
-  ]);
-  console.log("All UI components loaded.");
+function loadAllComponents() { // Removed async as it's now synchronous
+  console.log("Inserting UI components...");
+  loadComponent(titlebarHtml, 'titlebar-placeholder', 'titlebar.html');
+  loadComponent(toolbarHtml, 'toolbar-placeholder', 'toolbar.html');
+  loadComponent(fileExplorerHtml, 'file-explorer-placeholder', 'file-explorer.html');
+  loadComponent(statusBarHtml, 'status-bar-placeholder', 'status-bar.html');
+  loadComponent(extractDialogHtml, 'dialog-placeholder', 'extract-dialog.html');
+  console.log("All UI components inserted.");
 }
 
 /**
@@ -115,11 +115,15 @@ async function loadAllComponents() {
  * Responsible for initializing theme, setting up UI elements, and their event handlers.
  * 负责初始化主题，设置UI元素及其事件处理程序。
  */
-async function initializeApp() {
+async function initializeApp() { // Keep async for potential future async operations
   console.log("Initializing application...");
   
-  // Load HTML components first
-  await loadAllComponents();
+  // Insert HTML components (now synchronous)
+  loadAllComponents(); 
+
+  // No need for setTimeout anymore, as innerHTML is set synchronously with bundled content
+  // The DOM modification should be reflected immediately in this case.
+  console.log("Running setup functions after component insertion...");
 
   // Initialize theme settings
   initializeTheme();
