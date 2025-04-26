@@ -1,19 +1,35 @@
-/* Home Page Styles */
+/**
+ * Home Page Styles - Defines the application home screen appearance
+ * 主页样式 - 定义应用程序主屏幕的外观
+ */
+
+/**
+ * Main home container - Flexible container for home content
+ * 主页容器 - 主页内容的灵活容器
+ */
 .home-container {
   flex: 1;
   padding: 24px;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable vertical scrolling - 启用垂直滚动 */
   display: flex;
   flex-direction: column;
   gap: 24px;
-  background-color: var(--bg-color); /* Ensure home has consistent background */
+  background-color: var(--bg-color); /* Ensure home has consistent background - 确保主页有一致的背景 */
 }
 
+/**
+ * Home header - Contains main title and description
+ * 主页标题 - 包含主标题和描述
+ */
 .home-header {
   text-align: center;
   margin-bottom: 24px;
 }
 
+/**
+ * Main title - Primary heading text
+ * 主标题 - 主要标题文本
+ */
 .home-header h1 {
   font-size: 24px;
   font-weight: 600;
@@ -21,17 +37,29 @@
   color: var(--primary-color);
 }
 
+/**
+ * Description text - Subtitle or description paragraph
+ * 描述文本 - 副标题或描述段落
+ */
 .home-header p {
   font-size: 14px;
   color: #666;
 }
 
+/**
+ * Actions container - Holds all action groups
+ * 操作容器 - 容纳所有操作组
+ */
 .home-actions {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
+/**
+ * Action group card - Grouped related actions
+ * 操作组卡片 - 分组的相关操作
+ */
 .action-group {
   background-color: var(--card-bg-color);
   border-radius: 10px;
@@ -39,19 +67,31 @@
   box-shadow: var(--card-shadow);
 }
 
+/**
+ * Action group title - Section heading for actions
+ * 操作组标题 - 操作的部分标题
+ */
 .action-group h2 {
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 16px;
-  color: #444; /* Consider using var(--text-color) or a secondary text color variable */
+  color: #444; /* Consider using var(--text-color) or a secondary text color variable - 考虑使用var(--text-color)或次要文本颜色变量 */
 }
 
+/**
+ * Action buttons container - Layout for action buttons
+ * 操作按钮容器 - 操作按钮的布局
+ */
 .action-buttons {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
 
+/**
+ * Action button - Large clickable action tile
+ * 操作按钮 - 大型可点击操作图块
+ */
 .home-action-btn {
   display: flex;
   flex-direction: column;
@@ -67,26 +107,46 @@
   transition: all 0.2s ease;
 }
 
+/**
+ * Action button hover state - Visual feedback on hover
+ * 操作按钮悬停状态 - 悬停时的视觉反馈
+ */
 .home-action-btn:hover {
   background-color: rgba(0, 120, 212, 0.1);
   border-color: rgba(0, 120, 212, 0.2);
-  transform: translateY(-2px);
+  transform: translateY(-2px); /* Slight lift effect - 轻微提升效果 */
 }
 
+/**
+ * Action button icon - Visual indicator for action
+ * 操作按钮图标 - 操作的视觉指示
+ */
 .home-action-btn svg {
   margin-bottom: 12px;
   color: var(--primary-color);
 }
 
+/**
+ * Action button label - Text description of action
+ * 操作按钮标签 - 操作的文本描述
+ */
 .home-action-btn span {
   font-size: 14px;
   font-weight: 500;
 }
 
+/**
+ * Recent files list - List of recently opened files
+ * 最近文件列表 - 最近打开的文件列表
+ */
 .recent-files-list {
   min-height: 100px;
 }
 
+/**
+ * Empty state message - Shown when no recent files exist
+ * 空状态消息 - 当没有最近文件时显示
+ */
 .no-files-message {
   color: #999;
   font-style: italic;
@@ -94,18 +154,29 @@
   padding: 16px 0;
 }
 
-/* Optional: Footer/Stats if they are specific to home */
+/**
+ * Home footer - Contains stats and additional info
+ * 主页页脚 - 包含统计数据和附加信息
+ */
 .home-footer {
-  margin-top: auto;
+  margin-top: auto; /* Push to bottom of container - 推到容器底部 */
   padding-top: 32px;
 }
 
+/**
+ * Statistics cards container - Layout for stat cards
+ * 统计卡片容器 - 统计卡片的布局
+ */
 .stat-cards {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
 }
 
+/**
+ * Individual stat card - Shows a single statistic
+ * 单个统计卡片 - 显示单个统计数据
+ */
 .stat-card {
   background-color: var(--card-bg-color);
   border-radius: 8px;
@@ -117,6 +188,10 @@
   box-shadow: var(--card-shadow);
 }
 
+/**
+ * Stat icon container - Circular background for stat icon
+ * 统计图标容器 - 统计图标的圆形背景
+ */
 .stat-icon {
   width: 48px;
   height: 48px;
@@ -128,22 +203,38 @@
   margin-right: 16px;
 }
 
+/**
+ * Stat icon - Visual indicator for the statistic type
+ * 统计图标 - 统计类型的视觉指示
+ */
 .stat-icon svg {
   color: var(--primary-color);
 }
 
+/**
+ * Stat text content - Contains title and value
+ * 统计文本内容 - 包含标题和值
+ */
 .stat-content {
   flex: 1;
 }
 
+/**
+ * Stat title - Description of the statistic
+ * 统计标题 - 统计数据的描述
+ */
 .stat-title {
   font-size: 12px;
   color: #666;
   margin-bottom: 4px;
 }
 
+/**
+ * Stat value - The actual statistic number/value
+ * 统计值 - 实际的统计数字/值
+ */
 .stat-value {
   font-size: 20px;
   font-weight: 600;
-  color: #333; /* Consider using var(--text-color) */
+  color: #333; /* Consider using var(--text-color) - 考虑使用var(--text-color) */
 } 

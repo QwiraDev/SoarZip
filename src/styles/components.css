@@ -1,75 +1,111 @@
-/* Component Styles - Dropdown Menu */
+/**
+ * Component Styles - Reusable UI components across the application
+ * 组件样式 - 整个应用程序中可重用的UI组件
+ */
+
+/**
+ * Dropdown Menu - Floating menu that appears on trigger
+ * 下拉菜单 - 在触发时出现的浮动菜单
+ */
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
+  position: absolute; /* Positioned relative to parent - 相对于父元素定位 */
+  top: 100%; /* Positioned below the trigger - 定位在触发元素下方 */
   left: 0;
-  background-color: var(--dropdown-bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--control-border-radius);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  min-width: 180px;
-  display: none;
-  z-index: 1000;
+  background-color: var(--dropdown-bg-color); /* Semi-transparent background - 半透明背景 */
+  border: 1px solid var(--border-color); /* Subtle border - 微妙的边框 */
+  border-radius: var(--control-border-radius); /* Rounded corners - 圆角 */
+  box-shadow: 0 4px 12px var(--shadow-color); /* Drop shadow for depth - 深度的阴影 */
+  min-width: 180px; /* Minimum width for content - 内容的最小宽度 */
+  display: none; /* Hidden by default - 默认隐藏 */
+  z-index: 1000; /* Appears above other content - 出现在其他内容之上 */
   padding: 6px;
-  margin-top: 2px;
-  backdrop-filter: blur(10px);
+  margin-top: 2px; /* Small offset from trigger - 与触发元素的小偏移 */
+  backdrop-filter: blur(10px); /* Frosted glass effect - 磨砂玻璃效果 */
 }
 
+/**
+ * Visible dropdown state - Applied when dropdown is open
+ * 可见下拉状态 - 下拉菜单打开时应用
+ */
 .dropdown-menu.show {
   display: block;
-  animation: dropdown-fade 0.2s ease;
+  animation: dropdown-fade 0.2s ease; /* Smooth fade-in animation - 平滑淡入动画 */
 }
 
+/**
+ * Dropdown animation - Defines appearance animation for dropdown
+ * 下拉动画 - 定义下拉菜单的出现动画
+ */
 @keyframes dropdown-fade {
   from {
     opacity: 0;
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* Start slightly higher - 从稍高的位置开始 */
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0); /* End at final position - 结束于最终位置 */
   }
 }
 
+/**
+ * Dropdown item - Individual selectable option in dropdown
+ * 下拉项 - 下拉菜单中的单个可选选项
+ */
 .dropdown-item {
   display: block;
   width: 100%;
   text-align: left;
   padding: 8px 16px;
-  font-size: 12px;
+  font-size: 12px; /* Smaller text size - 较小的文本大小 */
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--text-color);
-  border-radius: var(--control-border-radius);
+  color: var(--text-color); /* Standard text color - 标准文本颜色 */
+  border-radius: var(--control-border-radius); /* Rounded corners - 圆角 */
   margin: 2px 0;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease; /* Smooth hover effect - 平滑悬停效果 */
 }
 
+/**
+ * Dropdown item hover state - Visual feedback on hover
+ * 下拉项悬停状态 - 悬停时的视觉反馈
+ */
 .dropdown-item:hover {
-  background-color: var(--hover-color);
+  background-color: var(--hover-color); /* Highlight background - 高亮背景 */
 }
 
+/**
+ * Dropdown item active state - Visual feedback when clicked
+ * 下拉项激活状态 - 点击时的视觉反馈
+ */
 .dropdown-item:active {
-  background-color: var(--active-color);
+  background-color: var(--active-color); /* Darker highlight - 更深的高亮 */
 }
 
+/**
+ * Menu divider - Horizontal line separating groups of menu items
+ * 菜单分隔线 - 分隔菜单项组的水平线
+ */
 .menu-divider {
   height: 1px;
-  background-color: var(--border-color);
+  background-color: var(--border-color); /* Subtle divider color - 微妙的分隔线颜色 */
   margin: 6px 0;
 }
 
-/* Add other reusable component styles here */
-
-/* Dark mode adaptations */
+/**
+ * Dark mode adaptations - Ensures proper colors in dark theme
+ * 深色模式适配 - 确保深色主题中的正确颜色
+ */
 .theme-dark .dropdown-menu,
 :root.theme-dark .dropdown-menu {
   background-color: var(--dropdown-bg-color);
   border-color: var(--border-color);
 }
 
-/* 关于对话框样式 */
+/**
+ * About dialog overlay - Darkened background for about dialog
+ * 关于对话框覆盖层 - 关于对话框的暗色背景
+ */
 .about-overlay {
   position: fixed;
   top: 0;
@@ -83,10 +119,18 @@
   backdrop-filter: blur(2px);
 }
 
+/**
+ * Visible about overlay - Applied when about dialog is shown
+ * 可见关于覆盖层 - 显示关于对话框时应用
+ */
 .about-overlay.open {
   opacity: 1;
 }
 
+/**
+ * About dialog container - Main about dialog box
+ * 关于对话框容器 - 主关于对话框
+ */
 .about-dialog {
   position: fixed;
   top: 50%;
@@ -106,11 +150,19 @@
   border: 1px solid var(--border-color);
 }
 
+/**
+ * Visible about dialog - Applied when about dialog is shown
+ * 可见关于对话框 - 显示关于对话框时应用
+ */
 .about-dialog.open {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
+/**
+ * About dialog header - Contains title and close button
+ * 关于对话框标题 - 包含标题和关闭按钮
+ */
 .about-header {
   display: flex;
   justify-content: space-between;
@@ -119,6 +171,10 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+/**
+ * About dialog title - Main heading for about dialog
+ * 关于对话框标题 - 关于对话框的主标题
+ */
 .about-header h2 {
   font-size: 18px;
   font-weight: 500;
@@ -126,6 +182,10 @@
   color: var(--text-color);
 }
 
+/**
+ * About dialog close button - Button to dismiss the about dialog
+ * 关于对话框关闭按钮 - 关闭关于对话框的按钮
+ */
 .about-close-btn {
   background: transparent;
   border: none;
@@ -140,11 +200,19 @@
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+/**
+ * About close button hover - Visual feedback on hover
+ * 关于关闭按钮悬停 - 悬停时的视觉反馈
+ */
 .about-close-btn:hover {
   background-color: var(--hover-color);
   transform: rotate(90deg);
 }
 
+/**
+ * About dialog content - Main content area for about information
+ * 关于对话框内容 - 关于信息的主要内容区域
+ */
 .about-content {
   padding: 24px;
   color: var(--text-color);
@@ -153,45 +221,77 @@
   align-items: center;
 }
 
+/**
+ * About logo container - App logo display in about dialog
+ * 关于徽标容器 - 关于对话框中的应用徽标显示
+ */
 .about-logo {
   margin-bottom: 16px;
   text-align: center;
 }
 
+/**
+ * About logo image - The actual app logo image
+ * 关于徽标图片 - 实际的应用徽标图片
+ */
 .about-logo img {
   width: 80px;
   height: 80px;
   border-radius: 12px;
 }
 
+/**
+ * About info container - Contains app name, version, etc.
+ * 关于信息容器 - 包含应用名称、版本等
+ */
 .about-info {
   text-align: center;
   margin-bottom: 24px;
 }
 
+/**
+ * About info title - App name heading
+ * 关于信息标题 - 应用名称标题
+ */
 .about-info h3 {
   font-size: 20px;
   font-weight: 600;
   margin: 0 0 8px 0;
 }
 
+/**
+ * Version text - Displays app version number
+ * 版本文本 - 显示应用版本号
+ */
 .about-info .version {
   font-size: 14px;
   margin: 8px 0;
   color: var(--text-secondary-color);
 }
 
+/**
+ * App description - Short description of the app
+ * 应用描述 - 应用的简短描述
+ */
 .about-info .description {
   font-size: 14px;
   margin: 8px 0;
 }
 
+/**
+ * Copyright notice - Copyright information text
+ * 版权声明 - 版权信息文本
+ */
 .about-info .copyright {
   font-size: 12px;
   margin: 16px 0 0 0;
   color: var(--text-secondary-color);
 }
 
+/**
+ * Technical info section - Contains system information
+ * 技术信息部分 - 包含系统信息
+ */
 .about-tech-info {
   padding: 16px;
   background-color: var(--bg-lighter-color);
@@ -200,22 +300,38 @@
   margin: 0 0 8px 0;
 }
 
+/**
+ * Technical info heading - Section title for technical info
+ * 技术信息标题 - 技术信息的部分标题
+ */
 .about-tech-info h4 {
   font-size: 14px;
   margin: 0 0 12px 0;
   color: var(--primary-color);
 }
 
+/**
+ * Tech info list - List of technical specifications
+ * 技术信息列表 - 技术规格列表
+ */
 .about-tech-info ul {
   margin: 0;
   padding: 0 0 0 20px;
   font-size: 13px;
 }
 
+/**
+ * Tech info list item - Individual specification item
+ * 技术信息列表项 - 单个规格项
+ */
 .about-tech-info li {
   margin-bottom: 6px;
 }
 
+/**
+ * About dialog footer - Contains action buttons
+ * 关于对话框页脚 - 包含操作按钮
+ */
 .about-footer {
   padding: 16px 20px;
   display: flex;
@@ -225,6 +341,10 @@
   background-color: var(--bg-color);
 }
 
+/**
+ * About button - Standard button in about dialog
+ * 关于按钮 - 关于对话框中的标准按钮
+ */
 .about-btn {
   padding: 8px 16px;
   border-radius: 6px;
@@ -236,16 +356,28 @@
   color: var(--text-color);
 }
 
+/**
+ * About button hover - Visual feedback on hover
+ * 关于按钮悬停 - 悬停时的视觉反馈
+ */
 .about-btn:hover {
   background-color: var(--hover-color);
 }
 
+/**
+ * Primary about button - Highlighted button for primary action
+ * 主要关于按钮 - 主要操作的突出按钮
+ */
 .about-primary-btn {
   background-color: var(--primary-color);
   border: 1px solid var(--primary-color);
   color: white;
 }
 
+/**
+ * Primary about button hover - Visual feedback on hover
+ * 主要关于按钮悬停 - 悬停时的视觉反馈
+ */
 .about-primary-btn:hover {
   background-color: var(--primary-hover-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

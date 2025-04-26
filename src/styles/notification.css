@@ -1,23 +1,32 @@
 /* 通知样式 - Absolute Positioning 版 */
+
+/**
+ * Notification container - Fixed position container for notifications
+ * 通知容器 - 通知的固定位置容器
+ */
 #notification-container {
-  position: fixed;
+  position: fixed; /* Fixed position in viewport - 在视口中的固定位置 */
   bottom: 16px;
   right: 16px;
-  z-index: 9999;
+  z-index: 9999; /* Very high z-index to appear above all content - 非常高的z-index以显示在所有内容之上 */
   max-width: 360px;
   width: 90%; 
-  pointer-events: none; 
+  pointer-events: none; /* Allow clicking through container - 允许点击穿透容器 */
   /* Height will be determined by absolute children */
   /* No flex properties needed */
 }
 
+/**
+ * Individual notification - The notification message box
+ * 单个通知 - 通知消息框
+ */
 .notification {
-  position: absolute; /* 使用绝对定位 */
-  right: 0; /* Pinned to the right of the container */
-  bottom: 0; /* Initial bottom will be set by JS */
-  display: flex; 
+  position: absolute; /* Absolute positioning for stacking - 用于堆叠的绝对定位 */
+  right: 0; /* Pinned to the right of the container - 固定在容器右侧 */
+  bottom: 0; /* Initial bottom will be set by JS - 初始底部将由JS设置 */
+  display: flex;
   align-items: flex-start;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 6px;
   background-color: var(--card-bg-color);
   box-shadow: var(--card-shadow);
@@ -25,13 +34,13 @@
   color: var(--text-color);
   border: 1px solid var(--border-color);
   overflow: hidden; 
-  pointer-events: auto; 
+  pointer-events: auto; /* Enable interaction with notification - 启用与通知的交互 */
   /* margin-bottom: 10px; */ /* No margin needed with absolute positioning */
 
   /* Initial animation state (set by JS, but good fallback) */
   opacity: 0;
   transform: translateX(110%); 
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out, bottom 0.3s ease-out; /* Default transitions */
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, bottom 0.3s ease-out; /* Default transitions - 默认过渡 */
 }
 
 /* REMOVE previous enter/exit classes */
@@ -39,7 +48,10 @@
 /* .notification.exit-active { ... } */
 
 
-/* --- 进度条 --- */
+/**
+ * Notification progress bar - Visual countdown indicator
+ * 通知进度条 - 视觉倒计时指示器
+ */
 .notification-progress {
   position: absolute;
   bottom: 0;
@@ -50,6 +62,10 @@
   transform-origin: left;
 }
 
+/**
+ * Progress bar animation - Active progress indicator
+ * 进度条动画 - 活动进度指示器
+ */
 .notification-progress::after {
   content: '';
   position: absolute;
@@ -62,21 +78,34 @@
   animation-duration: inherit; 
 }
 
+/**
+ * Progress countdown animation - Shrinking bar effect
+ * 进度倒计时动画 - 收缩条效果
+ */
 @keyframes progress-countdown {
   from { width: 100%; }
   to { width: 0%; }
 }
 
 /* --- 其他样式 (保持不变) --- */
+
+/**
+ * Notification icon - Visual indicator of notification type
+ * 通知图标 - 通知类型的视觉指示器
+ */
 .notification-icon {
   margin-right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px; /* 微调图标垂直对齐 */
+  margin-top: 2px; /* Fine-tune icon vertical alignment - 微调图标垂直对齐 */
 }
 
+/**
+ * Notification content - The main message text
+ * 通知内容 - 主要消息文本
+ */
 .notification-content {
   flex: 1;
   font-size: 14px;
@@ -84,6 +113,10 @@
   word-break: break-word;
 }
 
+/**
+ * Close button - Dismisses the notification
+ * 关闭按钮 - 关闭通知
+ */
 .notification-close {
   background: transparent;
   border: none;
@@ -98,11 +131,19 @@
   transition: background-color 0.2s ease;
 }
 
+/**
+ * Close button hover state - Visual feedback on hover
+ * 关闭按钮悬停状态 - 悬停时的视觉反馈
+ */
 .notification-close:hover {
   color: var(--text-color);
   background-color: var(--hover-color);
 }
 
+/**
+ * Info notification - Blue styling for informational messages
+ * 信息通知 - 信息性消息的蓝色样式
+ */
 .notification-info .notification-icon {
   color: var(--primary-color);
 }
@@ -110,6 +151,10 @@
   background-color: var(--primary-color);
 }
 
+/**
+ * Success notification - Green styling for success messages
+ * 成功通知 - 成功消息的绿色样式
+ */
 .notification-success .notification-icon {
   color: #0f9d58;
 }
@@ -117,6 +162,10 @@
   background-color: #0f9d58;
 }
 
+/**
+ * Warning notification - Orange styling for warning messages
+ * 警告通知 - 警告消息的橙色样式
+ */
 .notification-warning .notification-icon {
   color: #ff9800;
 }
@@ -124,6 +173,10 @@
   background-color: #ff9800;
 }
 
+/**
+ * Error notification - Red styling for error messages
+ * 错误通知 - 错误消息的红色样式
+ */
 .notification-error .notification-icon {
   color: #d32f2f;
 }
@@ -131,7 +184,9 @@
   background-color: #d32f2f;
 }
 
-/* 深色模式适配 (移除旧的媒体查询) */
+/* Dark mode adaptations - Removed old media query
+ * 深色模式适配 - 已移除旧的媒体查询
+ */
 /* 
 @media (prefers-color-scheme: dark) {
   .notification {

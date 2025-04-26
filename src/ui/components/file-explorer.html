@@ -1,0 +1,68 @@
+<!-- 
+  File Explorer Component
+  Manages the display of either the home page (welcome screen) or the file browser list.
+-->
+<div class="file-explorer">
+  <!-- Default Home Page: Shown when no archive is open -->
+  <div id="home-page" class="home-container">
+    <!-- Header section -->
+    <div class="home-header">
+      <h1>欢迎使用 Soar Zip</h1>
+      <p>高效、安全的压缩文件管理工具</p>
+    </div>
+    
+    <!-- Action buttons and recent files section -->
+    <div class="home-actions">
+      <!-- Getting Started action group -->
+      <div class="action-group">
+        <h2>开始使用</h2>
+        <div class="action-buttons">
+          <!-- Open Archive Button -->
+          <button class="home-action-btn" id="open-archive-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 8h14M5 8a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"></path>
+            </svg>
+            <span>打开压缩包</span>
+          </button>
+          <!-- New Archive Button -->
+          <button class="home-action-btn" id="new-archive-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 8v13H3V8"></path>
+              <path d="M1 3h22v5H1z"></path>
+              <path d="M10 12h4"></path>
+            </svg>
+            <span>新建压缩包</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Recent Files action group -->
+      <div class="action-group">
+        <h2>最近文件</h2>
+        <div class="recent-files-list">
+          <!-- Message shown when no recent files -->
+          <p class="no-files-message">暂无最近打开的文件</p>
+          <!-- Recent files list will be dynamically populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- File Browser List: Shown when an archive is open -->
+  <div id="file-browser" class="file-browser" style="display: none;">
+    <!-- Header row for file list columns -->
+    <div class="file-list-header">
+      <div class="file-list-column col-icon"></div> <!-- Placeholder for icon alignment -->
+      <div class="file-list-column col-name">名称</div>
+      <div class="file-list-column col-date">修改日期</div>
+      <div class="file-list-column col-type">类型</div>
+      <div class="file-list-column col-size">大小</div>
+    </div>
+    <!-- Body container for file list items -->
+    <div class="file-list-body">
+      <!-- File list items will be dynamically populated by JavaScript -->
+    </div>
+  </div>
+</div> 
+<!-- File Explorer Component End --> 

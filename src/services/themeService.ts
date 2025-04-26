@@ -1,54 +1,92 @@
 /**
- * 主题服务模块 - 处理主题设置
+ * Theme Service Module - Handles theme settings and application
+ * 主题服务模块 - 处理主题设置和应用
  */
 
-// 主题类型
+/**
+ * Theme mode type definition
+ * 主题模式类型定义
+ */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
-// 本地存储键
+// Local storage key for theme settings
 const THEME_STORAGE_KEY = 'soar-zip-theme-mode';
 
-// 获取当前系统主题模式
+/**
+ * Gets the current system theme preference
+ * 获取当前系统主题偏好
+ * 
+ * @returns - 'dark' if system is in dark mode, otherwise 'light'
+ *          - 如果系统处于深色模式返回'dark'，否则返回'light'
+ */
 function getSystemTheme(): 'light' | 'dark' {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-// 加载保存的主题设置
+/**
+ * Loads the user's saved theme preference from local storage
+ * 从本地存储加载用户保存的主题偏好
+ * 
+ * @returns - The saved theme mode or 'system' if none found
+ *          - 保存的主题模式，如果未找到则返回'system'
+ */
 export function loadSavedTheme(): ThemeMode {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
   return (savedTheme as ThemeMode) || 'system';
 }
 
-// 保存主题设置到本地存储
+/**
+ * Saves the theme preference to local storage
+ * 将主题偏好保存到本地存储
+ * 
+ * @param mode - The theme mode to save
+ *             - 要保存的主题模式
+ */
 export function saveThemeMode(mode: ThemeMode): void {
   localStorage.setItem(THEME_STORAGE_KEY, mode);
 }
 
-// 应用主题到文档
+/**
+ * Applies the selected theme to the document
+ * 将选定的主题应用到文档
+ * 
+ * Resolves 'system' to the actual system theme and 
+ * updates CSS classes and meta tags
+ * 将'system'解析为实际的系统主题并更新CSS类和meta标签
+ * 
+ * @param mode - The theme mode to apply
+ *             - 要应用的主题模式
+ */
 export function applyTheme(mode: ThemeMode): void {
   const actualTheme = mode === 'system' ? getSystemTheme() : mode;
   
-  console.log(`[themeService] 应用主题: ${mode} (实际: ${actualTheme})`);
+  console.log(`[themeService] Applying theme: ${mode} (actual: ${actualTheme})`);
   
-  // 移除之前的主题
+  // Remove previous theme classes
   document.documentElement.classList.remove('theme-light', 'theme-dark');
   
-  // 添加新主题
+  // Add new theme class
   document.documentElement.classList.add(`theme-${actualTheme}`);
   
-  // 更新meta标签
+  // Update meta tag for system theme integration
   updateThemeMetaTag(actualTheme);
   
-  // 保存设置
+  // Save setting if changed
   if (mode !== loadSavedTheme()) {
     saveThemeMode(mode);
   }
   
-  // 触发主题变更事件，便于组件响应
+  // Dispatch event for component reactions
   dispatchThemeChangeEvent(actualTheme);
 }
 
-// 更新meta标签以支持系统级深色模式
+/**
+ * Updates the theme-color meta tag for browser UI integration
+ * 更新theme-color元标签以集成浏览器UI
+ * 
+ * @param theme - The actual theme being applied
+ *              - 正在应用的实际主题
+ */
 function updateThemeMetaTag(theme: 'light' | 'dark'): void {
   let metaThemeColor = document.querySelector('meta[name="theme-color"]');
   
@@ -58,12 +96,18 @@ function updateThemeMetaTag(theme: 'light' | 'dark'): void {
     document.head.appendChild(metaThemeColor);
   }
   
-  // 设置主题颜色值
+  // Set theme color value based on light/dark mode
   const color = theme === 'dark' ? '#1e1e1e' : '#f9f9f9';
   metaThemeColor.setAttribute('content', color);
 }
 
-// 触发主题变更自定义事件
+/**
+ * Dispatches a custom event when theme changes
+ * 在主题更改时触发自定义事件
+ * 
+ * @param theme - The actual theme being applied
+ *              - 正在应用的实际主题
+ */
 function dispatchThemeChangeEvent(theme: 'light' | 'dark'): void {
   const event = new CustomEvent('themechange', { 
     detail: { theme },
@@ -72,16 +116,22 @@ function dispatchThemeChangeEvent(theme: 'light' | 'dark'): void {
   document.documentElement.dispatchEvent(event);
 }
 
-// 初始化主题
+/**
+ * Initializes the theme system
+ * 初始化主题系统
+ * 
+ * Loads saved preferences, applies theme, and sets up system theme change listeners
+ * 加载保存的偏好，应用主题，并设置系统主题变化监听器
+ */
 export function initializeTheme(): void {
-  console.log("[themeService] 初始化主题...");
+  console.log("[themeService] Initializing theme...");
   const savedTheme = loadSavedTheme();
   applyTheme(savedTheme);
   
-  // 监听系统主题变化
+  // Listen for system theme changes
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     const currentTheme = loadSavedTheme();
-    console.log(`[themeService] 系统主题变化: ${e.matches ? 'dark' : 'light'}`);
+    console.log(`[themeService] System theme changed: ${e.matches ? 'dark' : 'light'}`);
     
     if (currentTheme === 'system') {
       applyTheme('system');

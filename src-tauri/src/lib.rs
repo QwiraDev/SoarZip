@@ -503,6 +503,20 @@ fn extract_files(
     Ok(())
 }
 
+#[tauri::command]
+fn set_window_title(window: tauri::Window, title: String) -> Result<(), String> {
+    match window.set_title(&title) {
+        Ok(_) => {
+            println!("[SoarZip INFO] Window title set to: {}", title);
+            Ok(())
+        },
+        Err(e) => {
+            eprintln!("[SoarZip ERROR] Error setting window title: {}", e);
+            Err(format!("Failed to set window title: {}", e))
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -514,7 +528,8 @@ pub fn run() {
             select_archive_file,
             open_archive,
             select_destination_folder,
-            extract_files
+            extract_files,
+            set_window_title
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

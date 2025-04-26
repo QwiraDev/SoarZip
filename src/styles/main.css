@@ -1,49 +1,76 @@
-/* Main CSS Import File */
+/**
+ * Main CSS Import File - Central stylesheet that imports all CSS modules
+ * 主CSS导入文件 - 导入所有CSS模块的中央样式表
+ */
 
-/* Base and Utility Styles */
-@import './base.css';
-@import './utils.css';
-@import './components.css';
+/**
+ * Base and Utility Styles - Core style definitions
+ * 基础和实用程序样式 - 核心样式定义
+ */
+@import './base.css';     /* Base variables and styles - 基础变量和样式 */
+@import './utils.css';    /* Utility classes and helpers - 实用程序类和助手 */
+@import './components.css'; /* Reusable component styles - 可重用组件样式 */
 
-/* Layout and Structure */
-@import './layout.css';
-@import './titlebar.css';
-@import './toolbar.css';
-@import './file-explorer.css';
-@import './status-bar.css';
-@import './notification.css';
+/**
+ * Layout and Structure - App framework styling
+ * 布局和结构 - 应用框架样式
+ */
+@import './layout.css';   /* Main layout structure - 主布局结构 */
+@import './titlebar.css'; /* Window title bar - 窗口标题栏 */
+@import './toolbar.css';  /* Main toolbar - 主工具栏 */
+@import './file-explorer.css'; /* File explorer component - 文件浏览器组件 */
+@import './status-bar.css'; /* Status bar - 状态栏 */
+@import './notification.css'; /* Notification system - 通知系统 */
 
-/* Page-specific Styles */
-@import './home.css';
+/**
+ * Page-specific Styles - Styles for specific screens
+ * 页面特定样式 - 特定屏幕的样式
+ */
+@import './home.css';     /* Home screen styles - 主屏幕样式 */
 
-/* Feature-specific Styles */
-@import './settings.css'; /* 新增：设置样式 */
-@import './dialog.css'; /* Import dialog styles */
+/**
+ * Feature-specific Styles - Styles for specific functionalities
+ * 功能特定样式 - 特定功能的样式
+ */
+@import './settings.css'; /* Settings panel styles - 设置面板样式 */
+@import './dialog.css';   /* Dialog styles - 对话框样式 */
 
-/* Specific styles previously in main.css - move to appropriate files if needed */
+/**
+ * Legacy styles that will be moved to appropriate files
+ * 将被移动到适当文件的遗留样式
+ */
 
-/* Empty folder style (could go in home.css or file-explorer.css) */
+/**
+ * Empty folder placeholder style
+ * 空文件夹占位符样式
+ */
 .empty-folder {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100px;
-  color: #999;
-  font-style: italic;
+  color: #999;        /* Light gray text - 浅灰色文本 */
+  font-style: italic; /* Italicized text - 斜体文本 */
 }
 
-/* File item disabled state (could go in file-explorer.css or components.css) */
+/**
+ * Disabled file item style
+ * 禁用的文件项样式
+ */
 .file-item.disabled {
-  opacity: 0.6;
-  cursor: not-allowed !important;
-  pointer-events: none;
+  opacity: 0.6;                /* Reduced opacity - 降低的不透明度 */
+  cursor: not-allowed !important; /* Disabled cursor - 禁用光标 */
+  pointer-events: none;        /* Prevent interactions - 防止交互 */
 }
 
-/* logo hover effects (if they were meant to be global) */
+/**
+ * Logo hover effects
+ * Logo悬停效果
+ */
 .logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+  filter: drop-shadow(0 0 2em #747bff); /* Vite logo glow effect - Vite标志发光效果 */
 }
 
 .logo.typescript:hover {
-  filter: drop-shadow(0 0 2em #2d79c7);
+  filter: drop-shadow(0 0 2em #2d79c7); /* TypeScript logo glow effect - TypeScript标志发光效果 */
 } 

@@ -1,6 +1,14 @@
-/* Utility Styles */
+/**
+ * Utility Styles - Common reusable styles and helpers
+ *
+ * 实用工具样式 - 通用可重用样式和助手
+ */
 
-/* Scrollbar Styles */
+/**
+ * Custom scrollbar styling - Consistent scrollbar appearance
+ *
+ * 自定义滚动条样式 - 一致的滚动条外观
+ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -19,7 +27,11 @@
   background: var(--scrollbar-thumb-hover);
 }
 
-/* Loading Indicator Styles */
+/**
+ * Loading indicator overlay - Fullscreen loading state
+ *
+ * 加载指示器覆盖层 - 全屏加载状态
+ */
 .loading::after {
   content: '';
   position: fixed;
@@ -28,17 +40,22 @@
   width: 100%;
   height: 100%;
   background-color: var(--overlay-color);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px); /* Background blur effect - 背景模糊效果 */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
-  animation: fadeInOverlay 0.3s forwards;
-  pointer-events: none; /* Prevent interaction with overlay */
+  animation: fadeInOverlay 0.3s forwards; /* Fade in animation - 淡入动画 */
+  pointer-events: none; /* Prevent interaction with overlay - 防止与覆盖层交互 */
 }
 
+/**
+ * Loading spinner - Visual loading indicator
+ *
+ * 加载旋转器 - 视觉加载指示器
+ */
 .loading::before {
   content: '';
   position: fixed;
@@ -47,14 +64,19 @@
   transform: translate(-50%, -50%);
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.2); /* Spinner track color */
+  border: 3px solid rgba(255, 255, 255, 0.2); /* Spinner track color - 旋转器轨道颜色 */
   border-radius: 50%;
-  border-top-color: var(--primary-color); /* Spinner active color */
-  animation: spin 0.8s linear infinite;
+  border-top-color: var(--primary-color); /* Spinner active color - 旋转器活动颜色 */
+  animation: spin 0.8s linear infinite; /* Continuous rotation - 连续旋转 */
   z-index: 10000;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow - 微妙的阴影 */
 }
 
+/**
+ * Dark theme spinner adjustment - Changes spinner colors for dark mode
+ *
+ * 深色主题旋转器调整 - 为深色模式更改旋转器颜色
+ */
 :root.theme-dark .loading::before {
   border-color: rgba(0, 0, 0, 0.2);
   border-top-color: var(--primary-color);

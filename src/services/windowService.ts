@@ -47,7 +47,23 @@ export async function closeWindow(): Promise<void> {
  * @param title 标题文本
  */
 export async function setWindowTitle(title: string): Promise<void> {
-  await invoke('set_window_title', { title });
+  // 1. Update the custom title bar element
+  const currentFileElement = document.getElementById('current-file');
+  if (currentFileElement) {
+    currentFileElement.textContent = title || '未打开文件'; // Use provided title or default
+    console.log(`[windowService] Custom title bar element updated to: "${title}"`);
+  } else {
+    console.warn('[windowService] Custom title bar element #current-file not found.');
+  }
+
+  // 2. Update the actual OS window title via backend
+  console.log(`[windowService] Invoking set_window_title with title: "${title}"`);
+  try {
+    await invoke('set_window_title', { title });
+    console.log(`[windowService] Successfully invoked set_window_title for: "${title}"`);
+  } catch (error) {
+    console.error(`[windowService] Failed to invoke set_window_title for "${title}":`, error);
+  }
 }
 
 /**

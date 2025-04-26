@@ -1,9 +1,25 @@
+/**
+ * Logo Setup Module - Configures the logo click behavior
+ * Logo设置模块 - 配置logo点击行为
+ */
+
+/**
+ * Interface for dependencies needed by logo click handler
+ * Logo点击处理程序所需的依赖项接口
+ */
 export interface LogoClickDependencies {
   getArchivePath: () => string;
   confirm: (message: string) => boolean;
   resetApp: () => void;
 }
 
+/**
+ * Sets up click event handler for the application logo
+ * 设置应用程序logo的点击事件处理程序
+ * 
+ * @param deps - Dependencies needed for logo click actions
+ *             - Logo点击操作所需的依赖项
+ */
 export function setupLogoClick(deps: LogoClickDependencies): void {
   const logo = document.querySelector('.logo');
   

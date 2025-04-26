@@ -1,0 +1,28 @@
+<!-- 
+  Extract Confirmation Dialog Component
+  Provides an overlay and dialog box to confirm the extraction path and initiate the extraction process.
+-->
+<div id="extract-dialog-overlay" class="dialog-overlay" style="display: none;">
+  <!-- Dialog container -->
+  <div id="extract-dialog" class="dialog">
+    <!-- Dialog title -->
+    <h2>确认解压路径</h2>
+    <!-- Informational message -->
+    <p>文件将解压到以下位置：</p>
+    <!-- Container for the path input and change button -->
+    <div class="dialog-path-container">
+        <!-- Read-only input field displaying the current extraction path -->
+        <input type="text" id="extract-path-input" readonly>
+        <!-- Button to trigger path change functionality -->
+        <button id="change-path-btn" class="dialog-button">更改...</button>
+    </div>
+    <!-- Container for action buttons -->
+    <div class="dialog-buttons">
+      <!-- Primary button to confirm extraction -->
+      <button id="confirm-extract-btn" class="dialog-button primary">确认解压</button>
+      <!-- Button to cancel the extraction process -->
+      <button id="cancel-extract-btn" class="dialog-button">取消</button>
+    </div>
+  </div>
+</div>
+<!-- Dialog Component End --> 

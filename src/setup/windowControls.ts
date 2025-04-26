@@ -1,5 +1,13 @@
+/**
+ * Window Controls Setup Module - Configures the window control buttons
+ * 窗口控制设置模块 - 配置窗口控制按钮
+ */
 import { minimizeWindow, maximizeWindow, closeWindow } from '../services/windowService';
 
+/**
+ * Sets up event handlers for window control buttons (minimize, maximize, close)
+ * 为窗口控制按钮（最小化、最大化、关闭）设置事件处理程序
+ */
 export function setupWindowControls(): void {
   console.log("Setting up window controls..."); // Log setup start
   const minimizeBtn = document.getElementById('minimize-btn');

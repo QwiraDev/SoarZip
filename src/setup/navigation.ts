@@ -1,7 +1,14 @@
+/**
+ * Navigation Setup Module - Configures navigation controls and buttons
+ * 导航设置模块 - 配置导航控件和按钮
+ */
 import { openArchive } from "../services/fileService";
 import { showError } from "../ui/notification";
 
-// Type for dependencies needed by navigation setup
+/**
+ * Interface for dependencies needed by navigation setup
+ * 导航设置所需的依赖项接口
+ */
 export interface NavigationDependencies {
   isLoading: () => boolean;
   canGoBack: () => boolean;
@@ -18,11 +25,18 @@ export interface NavigationDependencies {
   setCurrentFiles: (files: any[]) => void; // Assuming FileItem type, adjust if needed
 }
 
+/**
+ * Sets up click event handlers for navigation buttons
+ * 为导航按钮设置点击事件处理程序
+ * 
+ * @param deps - Dependencies needed for navigation actions
+ *             - 导航操作所需的依赖项
+ */
 export function setupNavButtons(deps: NavigationDependencies): void {
-  const backBtn = document.querySelector('.nav-btn[title="后退"]');
-  const forwardBtn = document.querySelector('.nav-btn[title="前进"]');
-  const upBtn = document.querySelector('.nav-btn[title="上一级"]');
-  const refreshBtn = document.querySelector('.nav-btn[title="刷新"]');
+  const backBtn = document.querySelector('.nav-btn[title="Back"]');
+  const forwardBtn = document.querySelector('.nav-btn[title="Forward"]');
+  const upBtn = document.querySelector('.nav-btn[title="Up level"]');
+  const refreshBtn = document.querySelector('.nav-btn[title="Refresh"]');
   
   // Back button click
   backBtn?.addEventListener('click', () => {
@@ -72,7 +86,7 @@ export function setupNavButtons(deps: NavigationDependencies): void {
       // Refresh UI
       deps.refreshUI();
       
-      // 移除刷新完成提示
+      // Remove refresh success message
       // showSuccess("刷新完成"); 
     } catch (error) {
       console.error('刷新失败:', error);

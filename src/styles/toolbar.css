@@ -1,4 +1,14 @@
-/* Toolbar Styles */
+/**
+ * Toolbar Styles - Defines the application toolbar appearance
+ *
+ * 工具栏样式 - 定义应用程序工具栏外观
+ */
+
+/**
+ * Main toolbar container - Contains path bar and actions bar
+ *
+ * 主工具栏容器 - 包含路径栏和操作栏
+ */
 .toolbar {
   height: var(--toolbar-height);
   display: flex;
@@ -7,7 +17,11 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-/* Path Bar (First row of toolbar) */
+/**
+ * Path Bar - First row of toolbar showing navigation controls and current path
+ *
+ * 路径栏 - 工具栏第一行，显示导航控件和当前路径
+ */
 .path-bar {
   height: var(--path-bar-height);
   display: flex;
@@ -17,11 +31,21 @@
   justify-content: space-between;
 }
 
+/**
+ * Navigation buttons container - Groups back/forward/up/refresh buttons
+ *
+ * 导航按钮容器 - 组合后退/前进/向上/刷新按钮
+ */
 .nav-buttons {
   display: flex;
   gap: 2px;
 }
 
+/**
+ * Navigation button - Standard style for navigation controls
+ *
+ * 导航按钮 - 导航控件的标准样式
+ */
 .nav-btn {
   width: 32px;
   height: 32px;
@@ -36,10 +60,20 @@
   transition: background-color 0.15s ease;
 }
 
+/**
+ * Navigation button hover state - Visual feedback on hover
+ *
+ * 导航按钮悬停状态 - 悬停时的视觉反馈
+ */
 .nav-btn:hover {
   background-color: var(--hover-color);
 }
 
+/**
+ * Navigation button active state - Visual feedback when clicked
+ *
+ * 导航按钮活动状态 - 点击时的视觉反馈
+ */
 .nav-btn:active {
   background-color: var(--active-color);
 }
@@ -201,4 +235,9 @@
   height: 32px;
   background-color: var(--border-color);
   margin: 0 4px;
+}
+
+/* Style to hide the toolbar */
+.toolbar-hidden {
+  display: none !important; /* Use important to override potential inline styles */
 } 

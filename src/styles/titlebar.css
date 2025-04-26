@@ -1,4 +1,14 @@
-/* Titlebar Styles */
+/**
+ * Titlebar Styles - Defines the application window titlebar appearance
+ *
+ * 标题栏样式 - 定义应用程序窗口标题栏外观
+ */
+
+/**
+ * Main titlebar container - Top bar of the application window
+ *
+ * 主标题栏容器 - 应用程序窗口的顶部栏
+ */
 #titlebar {
   height: var(--titlebar-height);
   background-color: var(--bg-color);
@@ -7,15 +17,25 @@
   justify-content: space-between;
   padding: 0 8px;
   border-bottom: 1px solid var(--border-color);
-  -webkit-app-region: drag; /* Allows dragging the window */
+  -webkit-app-region: drag; /* Allows dragging the window - 允许拖动窗口 */
 }
 
+/**
+ * Left section of titlebar - Contains logo and main menu
+ *
+ * 标题栏左侧部分 - 包含徽标和主菜单
+ */
 .titlebar-left {
   display: flex;
   align-items: center;
   -webkit-app-region: drag;
 }
 
+/**
+ * Logo container - Application logo and name
+ *
+ * 徽标容器 - 应用程序徽标和名称
+ */
 .logo {
   display: flex;
   align-items: center;
@@ -27,6 +47,11 @@
   transition: background-color 0.2s ease;
 }
 
+/**
+ * Logo hover state - Visual feedback on hover
+ *
+ * 徽标悬停状态 - 悬停时的视觉反馈
+ */
 .logo:hover {
   background-color: var(--hover-color);
 }

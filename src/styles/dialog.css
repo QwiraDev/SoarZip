@@ -1,48 +1,79 @@
 /* src/styles/dialog.css */
 
+/**
+ * Dialog Styles - Defines modal dialog appearance and behavior
+ *
+ * 对话框样式 - 定义模态对话框的外观和行为
+ */
+
+/**
+ * Dialog overlay - Darkened background behind dialogs
+ *
+ * 对话框覆盖层 - 对话框后面的暗色背景
+ */
 .dialog-overlay {
-  position: fixed;
+  position: fixed; /* Cover entire viewport - 覆盖整个视口 */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black - 半透明黑色 */
+  backdrop-filter: blur(4px); /* Background blur effect - 背景模糊效果 */
+  -webkit-backdrop-filter: blur(4px); /* Safari support - Safari支持 */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 确保在顶层 */
+  z-index: 1000; /* Ensure it appears above other content - 确保它显示在其他内容之上 */
   
-  /* Animation styles */
+  /* Animation styles - 动画样式 */
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s, backdrop-filter 0.2s ease-in-out; /* Fade out quickly, transition blur */
+  transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s, backdrop-filter 0.2s ease-in-out; /* Fade out quickly - 快速淡出 */
 }
 
+/**
+ * Visible overlay state - Applied when dialog is shown
+ *
+ * 可见覆盖层状态 - 显示对话框时应用
+ */
 .dialog-overlay.visible {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out; /* Fade in, transition blur */
+  transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out; /* Fade in - 淡入 */
 }
 
+/**
+ * Dialog container - The main dialog box
+ *
+ * 对话框容器 - 主对话框
+ */
 .dialog {
-  /* 使用正确的主题背景变量 */
+  /* Use theme variable for background - 使用主题变量作为背景 */
   background-color: var(--bg-color);
   padding: 25px;
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  min-width: 400px; /* 对话框最小宽度 */
-  max-width: 80%; /* 最大宽度 */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Drop shadow for depth - 为深度添加阴影 */
+  min-width: 400px; /* Minimum dialog width - 对话框最小宽度 */
+  max-width: 80%; /* Responsive limit - 响应式限制 */
   color: var(--text-color);
-  transform: scale(0.95);
+  transform: scale(0.95); /* Start slightly smaller for animation - 开始时略小，用于动画 */
   transition: transform 0.2s ease-in-out;
 }
 
+/**
+ * Visible dialog state - Applied when dialog is shown
+ *
+ * 可见对话框状态 - 显示对话框时应用
+ */
 .dialog-overlay.visible .dialog {
-  transform: scale(1);
+  transform: scale(1); /* Full size when visible - 可见时为完整尺寸 */
 }
 
+/**
+ * Dialog title - Main heading for the dialog
+ *
+ * 对话框标题 - 对话框的主标题
+ */
 .dialog h2 {
   margin-top: 0;
   margin-bottom: 15px;
@@ -50,18 +81,33 @@
   color: var(--title-color);
 }
 
+/**
+ * Dialog text - Content paragraphs
+ *
+ * 对话框文本 - 内容段落
+ */
 .dialog p {
   margin-bottom: 10px;
 }
 
+/**
+ * Path input container - Holds path display and browse button
+ *
+ * 路径输入容器 - 包含路径显示和浏览按钮
+ */
 .dialog-path-container {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
+/**
+ * Extract path input - Displays the selected extraction path
+ *
+ * 提取路径输入 - 显示选定的提取路径
+ */
 #extract-path-input {
-  flex-grow: 1;
+  flex-grow: 1; /* Expand to fill available space - 扩展以填充可用空间 */
   padding: 8px 10px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -69,22 +115,32 @@
   color: var(--text-color);
   margin-right: 10px;
   font-size: 0.9em;
-  /* 让文本看起来更像标签而不是输入框 */
+  /* Make it look more like a label than an input - 使其看起来更像标签而不是输入框 */
   cursor: default;
-  overflow: hidden;      /* Hide overflowing text */
-  text-overflow: ellipsis; /* Add ellipsis (...) for overflow */
-  white-space: nowrap;   /* Prevent text wrapping */
+  overflow: hidden;      /* Hide overflowing text - 隐藏溢出文本 */
+  text-overflow: ellipsis; /* Add ellipsis (...) for overflow - 为溢出添加省略号(...) */
+  white-space: nowrap;   /* Prevent text wrapping - 防止文本换行 */
 }
 
+/**
+ * Dialog buttons container - Holds action buttons
+ *
+ * 对话框按钮容器 - 包含操作按钮
+ */
 .dialog-buttons {
   display: flex;
-  justify-content: flex-end; /* 按钮靠右对齐 */
-  gap: 10px; /* 按钮之间的间距 */
+  justify-content: flex-end; /* Align buttons to the right - 按钮靠右对齐 */
+  gap: 10px; /* Space between buttons - 按钮之间的间距 */
 }
 
+/**
+ * Dialog button - Standard button style
+ *
+ * 对话框按钮 - 标准按钮样式
+ */
 .dialog-button {
   padding: 8px 15px;
-  /* Ensure all buttons have a visible border using the standard border color */
+  /* Ensure all buttons have a visible border - 确保所有按钮都有可见的边框 */
   border: 1px solid var(--border-color);
   border-radius: 4px;
   background-color: var(--button-background);
@@ -94,19 +150,34 @@
   font-size: 0.9em;
 }
 
+/**
+ * Dialog button hover state - Visual feedback on hover
+ *
+ * 对话框按钮悬停状态 - 悬停时的视觉反馈
+ */
 .dialog-button:hover {
   background-color: var(--button-hover-background);
-  /* Optional: slightly darken border on hover for non-primary buttons */
+  /* Optional: slightly darken border on hover - 可选：悬停时边框略深 */
   /* border-color: var(--button-border-hover-color); */
 }
 
+/**
+ * Primary action button - Highlighted button for primary action
+ *
+ * 主要操作按钮 - 用于主要操作的突出按钮
+ */
 .dialog-button.primary {
   background-color: var(--accent-color);
   color: var(--accent-text-color);
-  /* Primary button uses accent color for border */
+  /* Primary button uses accent color for border - 主按钮使用强调色作为边框 */
   border-color: var(--accent-color);
 }
 
+/**
+ * Primary button hover state - Visual feedback on hover
+ *
+ * 主要按钮悬停状态 - 悬停时的视觉反馈
+ */
 .dialog-button.primary:hover {
   background-color: var(--accent-color-hover);
   border-color: var(--accent-color-hover);

@@ -1,0 +1,95 @@
+<!-- 
+  Custom Title Bar Component
+  Provides the application logo, main menu, current file display, and window controls.
+-->
+<div id="titlebar" data-tauri-drag-region>
+  <!-- Left section: Logo and Main Menu -->
+  <div class="titlebar-left" data-tauri-drag-region>
+    <!-- Logo area -->
+    <div class="logo" data-tauri-drag-region>
+      <img src="/src-tauri/icons/icon.png" alt="Soar Zip Logo" />
+      <span>Soar Zip</span>
+    </div>
+    <!-- Main application menu -->
+    <nav class="main-menu" data-tauri-drag-region>
+      <ul>
+        <!-- File Menu -->
+        <li class="menu-container">
+          <button class="menu-item" id="menu-file">文件</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item">新建压缩</button>
+            <button class="dropdown-item">打开</button>
+            <div class="menu-divider"></div>
+            <button class="dropdown-item">保存</button>
+            <button class="dropdown-item">另存为</button>
+            <div class="menu-divider"></div>
+            <button class="dropdown-item">退出</button>
+          </div>
+        </li>
+        <!-- View Menu -->
+        <li class="menu-container">
+          <button class="menu-item" id="menu-view">查看</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item">大图标</button>
+            <button class="dropdown-item">小图标</button>
+            <button class="dropdown-item">详细信息</button>
+            <div class="menu-divider"></div>
+            <button class="dropdown-item">刷新</button>
+          </div>
+        </li>
+        <!-- Tools Menu -->
+        <li class="menu-container">
+          <button class="menu-item" id="menu-tools">工具</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item">选项</button>
+            <button class="dropdown-item">密码设置</button>
+            <button class="dropdown-item">转换</button>
+          </div>
+        </li>
+        <!-- Help Menu -->
+        <li class="menu-container">
+          <button class="menu-item" id="menu-help">帮助</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item">帮助文档</button>
+            <button class="dropdown-item">检查更新</button>
+            <div class="menu-divider"></div>
+            <button class="dropdown-item">关于</button>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <!-- Center section: Current file display -->
+  <div class="titlebar-center" data-tauri-drag-region>
+    <span id="current-file">未打开文件</span>
+  </div>
+  <!-- Right section: Window controls (Settings, Minimize, Maximize, Close) -->
+  <div class="titlebar-right">
+    <!-- Settings Button -->
+    <button id="settings-btn" class="window-control" title="设置">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+    <!-- Minimize Button -->
+    <button id="minimize-btn" class="window-control" title="最小化">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <path d="M2 6 L10 6" stroke="currentColor" stroke-width="1" />
+      </svg>
+    </button>
+    <!-- Maximize/Restore Button -->
+    <button id="maximize-btn" class="window-control" title="最大化">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1" fill="none" />
+      </svg>
+    </button>
+    <!-- Close Button -->
+    <button id="close-btn" class="window-control" title="关闭">
+      <svg width="12" height="12" viewBox="0 0 12 12">
+        <path d="M2 2 L10 10 M2 10 L10 2" stroke="currentColor" stroke-width="1" />
+      </svg>
+    </button>
+  </div>
+</div> 
+<!-- Title Bar Component End --> 

@@ -1,156 +1,245 @@
-/* 设置面板样式 */
+/**
+ * Settings Panel Styles - Defines appearance and behavior of the settings panel
+ *
+ * 设置面板样式 - 定义设置面板的外观和行为
+ */
+
+/**
+ * Overlay backdrop - Darkens the background when settings panel is open
+ *
+ * 覆盖背景 - 设置面板打开时使背景变暗
+ */
 .settings-overlay {
-  position: fixed;
+  position: fixed; /* Cover entire viewport - 覆盖整个视口 */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--overlay-color);
-  z-index: 9000;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  backdrop-filter: blur(3px);
+  background-color: var(--overlay-color); /* Semi-transparent background - 半透明背景 */
+  z-index: 9000; /* High z-index to appear above other content - 高z-index以显示在其他内容之上 */
+  opacity: 0; /* Start transparent for animation - 开始时透明，用于动画 */
+  transition: opacity 0.3s ease; /* Smooth fade transition - 平滑淡入淡出过渡 */
+  backdrop-filter: blur(3px); /* Blur background content - 模糊背景内容 */
 }
 
+/**
+ * Visible overlay state - Applied when settings panel is shown
+ *
+ * 可见覆盖状态 - 显示设置面板时应用
+ */
 .settings-overlay.open {
-  opacity: 1;
+  opacity: 1; /* Fully opaque when open - 打开时完全不透明 */
 }
 
+/**
+ * Settings panel container - The main panel that contains settings controls
+ *
+ * 设置面板容器 - 包含设置控件的主面板
+ */
 .settings-panel {
-  position: fixed;
+  position: fixed; /* Fixed positioning in viewport - 在视口中固定定位 */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.95);
-  width: 780px;
-  max-width: 92vw;
-  max-height: 85vh;
-  background-color: var(--card-bg-color);
-  border-radius: 12px;
-  box-shadow: var(--card-shadow);
-  z-index: 9001;
+  transform: translate(-50%, -50%) scale(0.95); /* Center and slightly smaller for animation - 居中并略小，用于动画 */
+  width: 780px; /* Fixed width for consistent layout - 固定宽度，布局一致 */
+  max-width: 92vw; /* Responsive limitation - 响应式限制 */
+  max-height: 85vh; /* Prevent panel from being too tall - 防止面板过高 */
+  background-color: var(--card-bg-color); /* Panel background - 面板背景 */
+  border-radius: 12px; /* Rounded corners - 圆角 */
+  box-shadow: var(--card-shadow); /* Subtle shadow for depth - 微妙的阴影，增加深度感 */
+  z-index: 9001; /* Higher than overlay - 比覆盖层更高 */
   display: flex;
   flex-direction: column;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
+  opacity: 0; /* Start invisible - 开始时不可见 */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth fade and scale animation - 平滑的淡入和缩放动画 */
+  overflow: hidden; /* Prevent content overflow - 防止内容溢出 */
+  border: 1px solid var(--border-color); /* Subtle border - 微妙的边框 */
 }
 
+/**
+ * Visible panel state - Applied when settings panel is shown
+ *
+ * 可见面板状态 - 显示设置面板时应用
+ */
 .settings-panel.open {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  opacity: 1; /* Fully visible - 完全可见 */
+  transform: translate(-50%, -50%) scale(1); /* Full size - 完整尺寸 */
 }
 
+/**
+ * Settings panel header - Contains title and close button
+ *
+ * 设置面板标题 - 包含标题和关闭按钮
+ */
 .settings-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* Title on left, close button on right - 标题在左，关闭按钮在右 */
   align-items: center;
   padding: 12px 18px;
-  border-bottom: 1px solid var(--border-color);
-  background-color: rgba(var(--bg-color-rgb), 0.6);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color); /* Separator line - 分隔线 */
+  background-color: rgba(var(--bg-color-rgb), 0.6); /* Semi-transparent header - 半透明标题栏 */
+  backdrop-filter: blur(10px); /* Frosted glass effect - 磨砂玻璃效果 */
 }
 
+/**
+ * Settings panel title - Main heading for the settings panel
+ *
+ * 设置面板标题 - 设置面板的主标题
+ */
 .settings-header h2 {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 16px; /* Medium size font - 中等大小字体 */
+  font-weight: 500; /* Semi-bold weight - 半粗体 */
   margin: 0;
-  color: var(--text-color);
-  letter-spacing: 0.3px;
+  color: var(--text-color); /* Standard text color - 标准文本颜色 */
+  letter-spacing: 0.3px; /* Slightly increased letter spacing - 稍微增加字间距 */
 }
 
+/**
+ * Settings close button - Button to dismiss the settings panel
+ *
+ * 设置关闭按钮 - 关闭设置面板的按钮
+ */
 .settings-close-btn {
   background: transparent;
   border: none;
-  width: 28px;
+  width: 28px; /* Square dimensions - 正方形尺寸 */
   height: 28px;
-  border-radius: 50%;
+  border-radius: 50%; /* Circular shape - 圆形 */
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-color);
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  color: var(--text-color); /* Match text color - 匹配文本颜色 */
+  transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth hover and rotation - 平滑悬停和旋转 */
 }
 
+/**
+ * Close button hover state - Visual feedback on hover
+ *
+ * 关闭按钮悬停状态 - 悬停时的视觉反馈
+ */
 .settings-close-btn:hover {
-  background-color: var(--hover-color);
-  transform: rotate(90deg);
+  background-color: var(--hover-color); /* Background highlight - 背景高亮 */
+  transform: rotate(90deg); /* Rotate on hover - 悬停时旋转 */
 }
 
+/**
+ * Settings content container - Scrollable area for settings
+ *
+ * 设置内容容器 - 设置的可滚动区域
+ */
 .settings-content {
-  flex: 1;
-  overflow-y: auto;
-  color: var(--text-color);
+  flex: 1; /* Expand to fill panel - 扩展以填充面板 */
+  overflow-y: auto; /* Enable vertical scrolling - 启用垂直滚动 */
+  color: var(--text-color); /* Standard text color - 标准文本颜色 */
 }
 
+/**
+ * Scrollbar styling for settings content
+ *
+ * 设置内容的滚动条样式
+ */
 .settings-content::-webkit-scrollbar {
-  width: 8px;
+  width: 8px; /* Scrollbar width - 滚动条宽度 */
   height: 8px;
 }
 
 .settings-content::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
+  background: var(--scrollbar-track); /* Track color - 轨道颜色 */
 }
 
 .settings-content::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 4px;
+  background: var(--scrollbar-thumb); /* Thumb color - 滑块颜色 */
+  border-radius: 4px; /* Rounded corners - 圆角 */
 }
 
 .settings-content::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
+  background: var(--scrollbar-thumb-hover); /* Hover state - 悬停状态 */
 }
 
-/* 新的设置容器布局 */
+/**
+ * Settings container layout - Flexible layout with sidebar and content
+ *
+ * 设置容器布局 - 具有侧边栏和内容的灵活布局
+ */
 .settings-container {
   display: flex;
   height: 100%;
-  min-height: 400px;
+  min-height: 400px; /* Minimum height to ensure usability - 确保可用性的最小高度 */
 }
 
+/**
+ * Settings sidebar - Navigation menu for settings categories
+ *
+ * 设置侧边栏 - 设置类别的导航菜单
+ */
 .settings-sidebar {
-  width: 220px;
-  background-color: var(--bg-lighter-color);
-  border-right: 1px solid var(--border-color);
+  width: 220px; /* Fixed width sidebar - 固定宽度侧边栏 */
+  background-color: var(--bg-lighter-color); /* Slightly lighter background - 稍微浅一些的背景 */
+  border-right: 1px solid var(--border-color); /* Border separator - 边框分隔符 */
   padding: 12px 0;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Prevent sidebar from shrinking - 防止侧边栏收缩 */
 }
 
+/**
+ * Navigation item in settings sidebar - Individual setting category
+ *
+ * 设置侧边栏中的导航项 - 单个设置类别
+ */
 .settings-nav-item {
   display: flex;
   align-items: center;
   padding: 12px 18px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-secondary-color);
+  transition: all 0.2s ease; /* Smooth state transitions - 平滑状态过渡 */
+  color: var(--text-secondary-color); /* Less prominent text - 不太突出的文本 */
   position: relative;
   margin: 2px 6px;
-  border-radius: 8px;
+  border-radius: 8px; /* Rounded corners - 圆角 */
 }
 
+/**
+ * Navigation item hover state - Visual feedback on hover
+ *
+ * 导航项悬停状态 - 悬停时的视觉反馈
+ */
 .settings-nav-item:hover {
-  background-color: var(--hover-color);
-  color: var(--text-color);
+  background-color: var(--hover-color); /* Background highlight - 背景高亮 */
+  color: var(--text-color); /* More prominent text - 更突出的文本 */
 }
 
+/**
+ * Active navigation item - Currently selected category
+ *
+ * 活动导航项 - 当前选择的类别
+ */
 .settings-nav-item.active {
-  background-color: var(--primary-transparent-color);
-  color: var(--primary-color);
-  font-weight: 500;
+  background-color: var(--primary-transparent-color); /* Colored background - 有色背景 */
+  color: var(--primary-color); /* Accent text color - 强调文本颜色 */
+  font-weight: 500; /* Semi-bold weight - 半粗体 */
 }
 
+/**
+ * Active indicator - Left border highlight for active item
+ *
+ * 活动指示器 - 活动项的左边框高亮
+ */
 .settings-nav-item.active::before {
   content: '';
   position: absolute;
   left: -6px;
   top: 0;
   bottom: 0;
-  width: 3px;
-  background-color: var(--primary-color);
-  border-radius: 0 4px 4px 0;
+  width: 3px; /* Vertical accent line - 垂直强调线 */
+  background-color: var(--primary-color); /* Accent color - 强调色 */
+  border-radius: 0 4px 4px 0; /* Rounded right side - 圆角右侧 */
 }
 
+/**
+ * Navigation item icon - Visual identifier for each category
+ *
+ * 导航项图标 - 每个类别的视觉标识符
+ */
 .settings-nav-icon {
   margin-right: 12px;
   display: flex;
@@ -158,12 +247,22 @@
   justify-content: center;
 }
 
+/**
+ * Main content area - Contains settings controls
+ *
+ * 主内容区域 - 包含设置控件
+ */
 .settings-main-content {
-  flex-grow: 1;
+  flex-grow: 1; /* Expand to fill available space - 扩展以填充可用空间 */
   padding: 24px 28px;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable vertical scrolling - 启用垂直滚动 */
 }
 
+/**
+ * Scrollbar styling for main content
+ *
+ * 主内容的滚动条样式
+ */
 .settings-main-content::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -182,42 +281,77 @@
   background: var(--scrollbar-thumb-hover);
 }
 
+/**
+ * Settings section - Individual group of related settings
+ *
+ * 设置部分 - 相关设置的单个组
+ */
 .settings-section {
-  display: none;
+  display: none; /* Hidden by default - 默认隐藏 */
 }
 
+/**
+ * Active settings section - Currently visible section
+ *
+ * 活动设置部分 - 当前可见部分
+ */
 .settings-section.active {
   display: block;
-  animation: fade-in 0.3s ease;
+  animation: fade-in 0.3s ease; /* Fade in animation - 淡入动画 */
 }
 
+/**
+ * Fade in animation - Smooth appearance for content
+ *
+ * 淡入动画 - 内容的平滑出现
+ */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/**
+ * Section heading - Title for each settings section
+ *
+ * 部分标题 - 每个设置部分的标题
+ */
 .settings-section h3 {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: var(--primary-color);
-  border-left: 3px solid var(--primary-color);
+  color: var(--primary-color); /* Accent color for visibility - 为可见性使用强调色 */
+  border-left: 3px solid var(--primary-color); /* Left accent border - 左强调边框 */
   padding-left: 12px;
 }
 
+/**
+ * Form group - Container for a single setting control and label
+ *
+ * 表单组 - 单个设置控件和标签的容器
+ */
 .settings-form-group {
   margin-bottom: 22px;
-  max-width: 480px;
+  max-width: 480px; /* Limit width for readability - 限制宽度以提高可读性 */
 }
 
+/**
+ * Setting label - Text description for a setting
+ *
+ * 设置标签 - 设置的文本描述
+ */
 .settings-form-group label {
   display: block;
   margin-bottom: 10px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 500; /* Semi-bold for readability - 半粗体以提高可读性 */
   color: var(--text-color);
 }
 
+/**
+ * Select dropdown - Dropdown control for settings
+ *
+ * 选择下拉菜单 - 设置的下拉控件
+ */
 .settings-select {
   width: 100%;
   padding: 12px 14px;
@@ -227,75 +361,123 @@
   color: var(--text-color);
   font-size: 14px;
   outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  appearance: none; /* Remove default browser styling - 移除默认浏览器样式 */
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); /* Custom dropdown arrow - 自定义下拉箭头 */
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle shadow - 微妙的阴影 */
 }
 
+/**
+ * Select hover state - Visual feedback on hover
+ *
+ * 选择悬停状态 - 悬停时的视觉反馈
+ */
 .settings-select:hover {
-  border-color: var(--border-hover-color);
+  border-color: var(--border-hover-color); /* Darker border on hover - 悬停时边框更深 */
 }
 
+/**
+ * Select focus state - Visual feedback when focused
+ *
+ * 选择聚焦状态 - 聚焦时的视觉反馈
+ */
 .settings-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
+  border-color: var(--primary-color); /* Accent border when focused - 聚焦时的强调边框 */
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15); /* Focus ring - 聚焦环 */
 }
 
+/**
+ * Setting description - Helper text for a setting
+ *
+ * 设置描述 - 设置的帮助文本
+ */
 .settings-description {
   margin-top: 10px;
   font-size: 13px;
-  color: var(--text-secondary-color);
+  color: var(--text-secondary-color); /* Less prominent text - 不太突出的文本 */
   line-height: 1.5;
 }
 
+/**
+ * Empty placeholder - Displayed when section has no content
+ *
+ * 空占位符 - 部分没有内容时显示
+ */
 .settings-empty-placeholder {
   color: var(--text-muted-color);
   font-style: italic;
   text-align: center;
   padding: 40px 0;
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--border-color); /* Dashed border for visual indication - 虚线边框用于视觉指示 */
   border-radius: 10px;
   background-color: var(--bg-lighter-color);
 }
 
-/* 深色模式适配变量 */
+/**
+ * Theme mode variables - Custom properties for theme colors
+ *
+ * 主题模式变量 - 主题颜色的自定义属性
+ */
 :root {
-  --primary-color-rgb: 0, 120, 212;
-  --primary-transparent-color: rgba(0, 120, 212, 0.1);
-  --input-bg-color: var(--bg-color);
-  --text-muted-color: #888;
-  --bg-color-rgb: 255, 255, 255;
+  --primary-color-rgb: 0, 120, 212; /* RGB format for opacity variations - 用于不透明度变化的RGB格式 */
+  --primary-transparent-color: rgba(0, 120, 212, 0.1); /* Transparent accent color - 透明强调色 */
+  --input-bg-color: var(--bg-color); /* Input background matches theme - 输入背景匹配主题 */
+  --text-muted-color: #888; /* Muted text for less emphasis - 用于较少强调的柔和文本 */
+  --bg-color-rgb: 255, 255, 255; /* Base background in RGB - RGB格式的基础背景 */
 }
 
+/**
+ * Dark theme variables - Override properties for dark mode
+ *
+ * 深色主题变量 - 为深色模式覆盖属性
+ */
 :root.theme-dark {
-  --primary-color-rgb: 77, 169, 255;
+  --primary-color-rgb: 77, 169, 255; /* Brighter in dark mode - 在深色模式下更亮 */
   --primary-transparent-color: rgba(77, 169, 255, 0.1);
-  --input-bg-color: #2d2d2d;
-  --text-muted-color: #777;
+  --input-bg-color: #2d2d2d; /* Darker input background - 更深的输入背景 */
+  --text-muted-color: #777; /* Slightly brighter muted text - 稍微亮一些的柔和文本 */
   --bg-color-rgb: 32, 32, 32;
 }
 
-/* 深色模式适配 */
+/**
+ * Dark mode panel styling - Panel appearance in dark theme
+ *
+ * 深色模式面板样式 - 深色主题中的面板外观
+ */
 .theme-dark .settings-panel,
 :root.theme-dark .settings-panel {
   background-color: var(--card-bg-color);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Stronger shadow in dark mode - 深色模式下更强的阴影 */
 }
 
+/**
+ * Dark mode sidebar styling - Sidebar appearance in dark theme
+ *
+ * 深色模式侧边栏样式 - 深色主题中的侧边栏外观
+ */
 .theme-dark .settings-sidebar,
 :root.theme-dark .settings-sidebar {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent dark background - 半透明深色背景 */
 }
 
+/**
+ * Light mode sidebar styling - Sidebar appearance in light theme
+ *
+ * 浅色模式侧边栏样式 - 浅色主题中的侧边栏外观
+ */
 .theme-light .settings-sidebar,
 :root.theme-light .settings-sidebar {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5; /* Light gray background - 浅灰色背景 */
 }
 
+/**
+ * Theme selector layout - Grid layout for theme options
+ *
+ * 主题选择器布局 - 主题选项的网格布局
+ */
 .theme-selector {
   display: flex;
   gap: 16px;
@@ -303,6 +485,11 @@
   justify-content: center;
 }
 
+/**
+ * Theme option card - Individual theme choice card
+ *
+ * 主题选项卡 - 单个主题选择卡
+ */
 .theme-option {
   display: flex;
   flex-direction: column;
@@ -311,7 +498,7 @@
   width: 120px;
   height: 120px;
   border-radius: 12px;
-  border: 2px solid transparent;
+  border: 2px solid transparent; /* Invisible border by default - 默认情况下透明边框 */
   padding: 16px;
   cursor: pointer;
   background-color: var(--card-bg-color);
@@ -321,6 +508,11 @@
   overflow: hidden;
 }
 
+/**
+ * Theme option background effect - Gradient overlay
+ *
+ * 主题选项背景效果 - 渐变覆盖
+ */
 .theme-option::before {
   content: '';
   position: absolute;
@@ -328,25 +520,45 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(var(--primary-color-rgb), 0.05) 100%);
+  background: linear-gradient(135deg, transparent 0%, rgba(var(--primary-color-rgb), 0.05) 100%); /* Subtle gradient - 微妙的渐变 */
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+/**
+ * Theme option hover state - Visual feedback on hover
+ *
+ * 主题选项悬停状态 - 悬停时的视觉反馈
+ */
 .theme-option:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px); /* Lift effect - 提升效果 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover - 悬停时更强的阴影 */
 }
 
+/**
+ * Theme option hover background - Show gradient on hover
+ *
+ * 主题选项悬停背景 - 悬停时显示渐变
+ */
 .theme-option:hover::before {
   opacity: 1;
 }
 
+/**
+ * Selected theme option - Highlights the active theme
+ *
+ * 选定的主题选项 - 突出显示活动主题
+ */
 .theme-option.selected {
-  border-color: var(--primary-color);
-  background-color: rgba(var(--primary-color-rgb), 0.08);
+  border-color: var(--primary-color); /* Accent border - 强调边框 */
+  background-color: rgba(var(--primary-color-rgb), 0.08); /* Light accent background - 浅强调背景 */
 }
 
+/**
+ * Selected indicator - Corner marker for selected theme
+ *
+ * 已选指示器 - 所选主题的角标记
+ */
 .theme-option.selected::after {
   content: '';
   position: absolute;
@@ -355,9 +567,14 @@
   width: 24px;
   height: 24px;
   background-color: var(--primary-color);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%); /* Triangle shape - 三角形 */
 }
 
+/**
+ * Theme icon - Visual representation of theme
+ *
+ * 主题图标 - 主题的视觉表示
+ */
 .theme-icon {
   display: flex;
   align-items: center;
@@ -368,10 +585,20 @@
   transition: transform 0.3s ease;
 }
 
+/**
+ * Theme icon hover effect - Animation on hover
+ *
+ * 主题图标悬停效果 - 悬停时的动画
+ */
 .theme-option:hover .theme-icon {
-  transform: scale(1.1);
+  transform: scale(1.1); /* Grow slightly - 稍微放大 */
 }
 
+/**
+ * Theme label - Text description of theme
+ *
+ * 主题标签 - 主题的文本描述
+ */
 .theme-label {
   font-size: 14px;
   font-weight: 500;
@@ -379,18 +606,33 @@
   color: var(--text-color);
 }
 
+/**
+ * About content section - Information about the app
+ *
+ * 关于内容部分 - 有关应用程序的信息
+ */
 .about-content {
   padding: 8px;
-  background-color: rgba(var(--primary-color-rgb), 0.05);
+  background-color: rgba(var(--primary-color-rgb), 0.05); /* Very light accent background - 非常浅的强调背景 */
   border-radius: 8px;
   line-height: 1.6;
 }
 
+/**
+ * About content paragraph - Text blocks in about section
+ *
+ * 关于内容段落 - 关于部分的文本块
+ */
 .about-content p {
   margin: 6px 0;
   font-size: 14px;
 }
 
+/**
+ * Copyright text - Copyright information in about section
+ *
+ * 版权文本 - 关于部分的版权信息
+ */
 .about-content .copyright {
   font-size: 12px;
   color: var(--text-secondary-color);

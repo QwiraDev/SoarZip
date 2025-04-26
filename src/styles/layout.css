@@ -1,13 +1,44 @@
+/**
+ * Layout CSS - Defines the main app layout structure
+ * 布局CSS - 定义应用程序的主要布局结构
+ */
+
+/**
+ * Main app container - Full viewport size with column layout
+ * 主应用容器 - 全视口大小，列布局
+ */
 #app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
+  height: 100vh; /* Fill entire viewport height - 填充整个视口高度 */
+  width: 100vw; /* Fill entire viewport width - 填充整个视口宽度 */
 }
 
+/**
+ * Main content area - Flexible size with column layout
+ * Sits below the title bar and contains the main app interface
+ *
+ * 主内容区域 - 灵活大小，列布局
+ * 位于标题栏下方，包含主应用界面
+ */
 #main-content {
-  flex: 1;
+  flex: 1; /* Grow to fill available space - 增长以填充可用空间 */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; /* Prevent content overflow - 防止内容溢出 */
+}
+
+/**
+ * Ensure placeholders participate in the flex layout correctly
+ */
+#toolbar-placeholder,
+#status-bar-placeholder {
+  flex-shrink: 0; /* Prevent toolbar and status bar from shrinking */
+}
+
+#file-explorer-placeholder {
+  flex: 1; /* Allow file explorer to take remaining space */
+  min-height: 0; /* Prevent content from expanding the container */
+  display: flex; /* Allow its child (.file-explorer) to use height: 100% */
+  overflow: hidden; /* Hide overflow from the placeholder itself */
 } 

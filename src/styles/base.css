@@ -1,51 +1,66 @@
+/**
+ * Base CSS - Contains root variables and basic styling
+ * 基础CSS - 包含根变量和基本样式
+ */
 :root {
-  /* 默认浅色主题变量 */
-  --bg-color: #f9f9f9;
-  --text-color: #202020;
-  --text-secondary-color: #606060;
-  --border-color: #e0e0e0;
-  --primary-color: #0078d4;
-  --primary-hover-color: #106ebe;
-  --hover-color: #f0f0f0;
-  --active-color: #e5e5e5;
-  --titlebar-height: 38px;
-  --toolbar-height: 88px;
-  --path-bar-height: 38px;
-  --actions-bar-height: 50px;
-  --status-bar-height: 24px;
-  --shadow-color: rgba(0, 0, 0, 0.08);
-  --window-control-hover: rgba(0, 0, 0, 0.05);
-  --window-control-active: rgba(0, 0, 0, 0.08);
-  --close-btn-hover: rgba(232, 17, 35, 0.9);
-  --font-family: "Segoe UI", system-ui, sans-serif;
-  --control-border-radius: 4px;
-  --accent-color: rgba(0, 120, 212, 0.8);
-  --card-bg-color: #ffffff;
-  --card-hover-color: #f5f5f5;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --menu-item-radius: 6px;
-  --dropdown-bg-color: rgba(255, 255, 255, 0.95);
-  --scrollbar-track: transparent;
-  --scrollbar-thumb: #ccc;
-  --scrollbar-thumb-hover: #aaa;
-  --overlay-color: rgba(0, 0, 0, 0.5);
+  /* Light theme variables - 浅色主题变量 */
+  --bg-color: #f9f9f9;             /* Background color - 背景色 */
+  --text-color: #202020;           /* Main text color - 主要文本颜色 */
+  --text-secondary-color: #606060; /* Secondary text color - 次要文本颜色 */
+  --border-color: #e0e0e0;         /* Border color - 边框颜色 */
+  --primary-color: #0078d4;        /* Primary accent color - 主要强调色 */
+  --primary-hover-color: #106ebe;  /* Primary color on hover - 悬停时的主要颜色 */
+  --hover-color: #f0f0f0;          /* Hover state background - 悬停状态背景 */
+  --active-color: #e5e5e5;         /* Active state background - 激活状态背景 */
+  --titlebar-height: 38px;         /* Title bar height - 标题栏高度 */
+  --toolbar-height: 88px;          /* Toolbar height - 工具栏高度 */
+  --path-bar-height: 38px;         /* Path bar height - 路径栏高度 */
+  --actions-bar-height: 50px;      /* Actions bar height - 操作栏高度 */
+  --status-bar-height: 24px;       /* Status bar height - 状态栏高度 */
+  --shadow-color: rgba(0, 0, 0, 0.08); /* Shadow color - 阴影颜色 */
+  --window-control-hover: rgba(0, 0, 0, 0.05); /* Window control hover background - 窗口控制悬停背景 */
+  --window-control-active: rgba(0, 0, 0, 0.08); /* Window control active background - 窗口控制激活背景 */
+  --close-btn-hover: rgba(232, 17, 35, 0.9); /* Close button hover color - 关闭按钮悬停颜色 */
+  --font-family: "Segoe UI", system-ui, sans-serif; /* Font family - 字体族 */
+  --control-border-radius: 4px;    /* Border radius for controls - 控件的边框圆角 */
+  --accent-color: rgba(0, 120, 212, 0.8); /* Accent color - 强调色 */
+  --card-bg-color: #ffffff;        /* Card background color - 卡片背景色 */
+  --card-hover-color: #f5f5f5;     /* Card hover background color - 卡片悬停背景色 */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Card shadow - 卡片阴影 */
+  --menu-item-radius: 6px;         /* Menu item border radius - 菜单项边框圆角 */
+  --dropdown-bg-color: rgba(255, 255, 255, 0.95); /* Dropdown background color - 下拉菜单背景色 */
+  --scrollbar-track: transparent;  /* Scrollbar track color - 滚动条轨道颜色 */
+  --scrollbar-thumb: #ccc;         /* Scrollbar thumb color - 滚动条滑块颜色 */
+  --scrollbar-thumb-hover: #aaa;   /* Scrollbar thumb hover color - 滚动条滑块悬停颜色 */
+  --overlay-color: rgba(0, 0, 0, 0.5); /* Overlay color for modals - 模态框的覆盖层颜色 */
 }
 
+/**
+ * Reset basic element styling
+ * 重置基本元素样式
+ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/**
+ * Body styles - Sets the global font, color and background
+ * 主体样式 - the global font, color and background
+ */
 body {
   font-family: var(--font-family);
   color: var(--text-color);
   background-color: var(--bg-color);
-  overflow: hidden;
-  user-select: none;
+  overflow: hidden; /* Prevent scrolling on the main window - 防止主窗口滚动 */
+  user-select: none; /* Disable text selection - 禁用文本选择 */
 }
 
-/* 浅色主题变量覆盖 */
+/**
+ * Light theme variables - explicitly set for light theme
+ * 浅色主题变量 - 明确设置浅色主题
+ */
 :root.theme-light {
   --bg-color: #f9f9f9;
   --text-color: #202020;
@@ -66,29 +81,38 @@ body {
   --overlay-color: rgba(0, 0, 0, 0.5);
 }
 
-/* 深色主题变量 */
+/**
+ * Dark theme variables - Override colors for dark theme
+ * 深色主题变量 - 为深色主题覆盖颜色
+ */
 :root.theme-dark {
-  --bg-color: #1e1e1e;
-  --text-color: #e8e8e8;
-  --text-secondary-color: #a0a0a0;
-  --border-color: #444444;
-  --primary-color: #4da9ff;
-  --primary-hover-color: #60b3ff;
-  --hover-color: #2c2c2c;
-  --active-color: #3a3a3a;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --window-control-hover: rgba(255, 255, 255, 0.1);
-  --window-control-active: rgba(255, 255, 255, 0.15);
-  --card-bg-color: #252525;
-  --card-hover-color: #333333;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --dropdown-bg-color: rgba(40, 40, 40, 0.95);
-  --scrollbar-thumb: #555;
-  --scrollbar-thumb-hover: #777;
-  --overlay-color: rgba(0, 0, 0, 0.7);
+  --bg-color: #1e1e1e;           /* Dark background - 深色背景 */
+  --text-color: #e8e8e8;         /* Light text for contrast - 为对比提供的亮色文本 */
+  --text-secondary-color: #a0a0a0; /* Secondary text with less contrast - 对比度较低的次要文本 */
+  --border-color: #444444;       /* Darker borders - 更深的边框 */
+  --primary-color: #4da9ff;      /* Brighter primary color for visibility - 为可见性提供的更亮主色 */
+  --primary-hover-color: #60b3ff; /* Hover state for primary color - 主色的悬停状态 */
+  --hover-color: #2c2c2c;        /* Subtle hover highlight - 微妙的悬停高亮 */
+  --active-color: #3a3a3a;       /* Active state highlight - 激活状态高亮 */
+  --shadow-color: rgba(0, 0, 0, 0.3); /* Stronger shadows for depth - 为深度提供的更强阴影 */
+  --window-control-hover: rgba(255, 255, 255, 0.1); /* Light hover effect - 亮色悬停效果 */
+  --window-control-active: rgba(255, 255, 255, 0.15); /* Light active effect - 亮色激活效果 */
+  --card-bg-color: #252525;      /* Card background - 卡片背景 */
+  --card-hover-color: #333333;   /* Card hover state - 卡片悬停状态 */
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Stronger card shadows - 更强的卡片阴影 */
+  --dropdown-bg-color: rgba(40, 40, 40, 0.95); /* Dark dropdown - 深色下拉菜单 */
+  --scrollbar-thumb: #555;       /* Darker scrollbar - 更深的滚动条 */
+  --scrollbar-thumb-hover: #777; /* Scrollbar hover - 滚动条悬停 */
+  --overlay-color: rgba(0, 0, 0, 0.7); /* Darker overlay - 更深的覆盖层 */
 }
 
-/* 兼容性：为支持旧代码，保留媒体查询 */
+/**
+ * Compatibility mode for OS system preferences
+ * Applies dark theme based on system preferences if theme isn't explicitly set
+ *
+ * 兼容OS系统偏好的模式
+ * 如果未明确设置主题，则根据系统偏好应用深色主题
+ */
 @media (prefers-color-scheme: dark) {
   :root:not(.theme-light) {
     --bg-color: #1e1e1e;

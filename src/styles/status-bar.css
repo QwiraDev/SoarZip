@@ -1,35 +1,57 @@
-/* Status Bar Styles */
+/**
+ * Status Bar Styles - Defines appearance of the application status bar
+ * 状态栏样式 - 定义应用程序状态栏的外观
+ */
+
+/**
+ * Main status bar container - Fixed height bar at the bottom of the app
+ * Displays information about the current state and operations
+ *
+ * 主状态栏容器 - 应用程序底部的固定高度栏
+ * 显示有关当前状态和操作的信息
+ */
 .status-bar {
-  height: var(--status-bar-height);
+  height: var(--status-bar-height); /* Use pre-defined height - 使用预定义的高度 */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* Separate left and right content - 分隔左右内容 */
   padding: 0 10px;
-  background-color: var(--status-bar-background, var(--bg-color));
-  border-top: 1px solid var(--border-color);
-  font-size: 12px;
-  color: var(--text-secondary-color);
-  flex-shrink: 0;
+  background-color: var(--status-bar-background, var(--bg-color)); /* Fallback to bg-color - 回退到背景色 */
+  border-top: 1px solid var(--border-color); /* Top border for separation - 用于分隔的顶部边框 */
+  font-size: 12px; /* Smaller text - 较小的文本 */
+  color: var(--text-secondary-color); /* Less prominent text - 不太突出的文本 */
+  flex-shrink: 0; /* Prevent shrinking - 防止收缩 */
 }
 
+/**
+ * Left side of status bar - Contains primary status info
+ * 状态栏左侧 - 包含主要状态信息
+ */
 .status-left {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 6px; /* Space between items - 项目之间的间距 */
 }
 
-/* Spinner Styles */
+/**
+ * Spinner Animation - Creates rotating effect for loading indicators
+ * 旋转器动画 - 为加载指示器创建旋转效果
+ */
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
+/**
+ * Loading spinner - Visual indicator for background processes
+ * 加载旋转器 - 后台进程的视觉指示器
+ */
 .spinner {
   display: inline-block;
-  width: 12px;
+  width: 12px; /* Small size - 小尺寸 */
   height: 12px;
-  border: 2px solid var(--text-secondary-color);
-  border-top: 2px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border: 2px solid var(--text-secondary-color); /* Circle outline - 圆形轮廓 */
+  border-top: 2px solid var(--primary-color); /* Colored segment - 彩色段 */
+  border-radius: 50%; /* Perfect circle - 完美圆形 */
+  animation: spin 1s linear infinite; /* Continuous rotation - 连续旋转 */
 }

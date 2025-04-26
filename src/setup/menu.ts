@@ -1,11 +1,25 @@
+/**
+ * Menu Setup Module - Configures the application menu system
+ * 菜单设置模块 - 配置应用程序菜单系统
+ */
 import { showError } from '../ui/notification';
 import { showAboutDialog } from '../ui/aboutDialog.ts';
 
-// Type for dependencies needed by menu setup
+/**
+ * Interface for dependencies needed by menu setup
+ * 菜单设置所需的依赖项接口
+ */
 export interface MenuDependencies {
   openArchiveDialog: () => Promise<void>;
 }
 
+/**
+ * Sets up event handlers for menu items and dropdowns
+ * 为菜单项和下拉菜单设置事件处理程序
+ * 
+ * @param deps - Dependencies needed for menu actions
+ *             - 菜单操作所需的依赖项
+ */
 export function setupMenuItems(deps: MenuDependencies): void {
   // Handle main menu button clicks - show/hide dropdown
   const menuContainers = document.querySelectorAll('.menu-container');
@@ -52,7 +66,7 @@ export function setupMenuItems(deps: MenuDependencies): void {
       } else if (itemText === '退出') {
         window.close(); // Directly use window API
       } else if (itemText === '关于') {
-        showAboutDialog(); // 显示关于对话框
+        showAboutDialog(); // Show about dialog
       }
       // Add handling for other menu items (Save, Save As, View options, etc.) here
     });
