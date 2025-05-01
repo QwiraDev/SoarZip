@@ -93,4 +93,42 @@ body.initializing #main-content {
 /* You might need to hide specific components if they are outside #main-content */
 /* body.initializing #some-other-element { display: none; } */
 
+/* Custom Context Menu Styles */
+#custom-context-menu {
+  background-color: #ffffff; /* 使用固定的白色 */
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 6px 0;
+  min-width: 180px;
+  font-size: 0.9rem;
+}
+
+#custom-context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#custom-context-menu li {
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  white-space: nowrap;
+  color: var(--text-color);
+}
+
+#custom-context-menu li:hover {
+  background-color: var(--accent-color-hover);
+  color: var(--text-color-on-accent);
+}
+
+/* Add a separator style (optional) */
+#custom-context-menu hr {
+  border: none;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4px 0;
+}
+
 /* ... rest of css ... */ 

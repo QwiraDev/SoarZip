@@ -4,7 +4,14 @@
  */
 import { formatFileSize, formatDate } from "../utils";
 import { FileItem, getDisplayName, getFileIcon } from "../services/fileService";
-import { showInfo } from "./notification";
+import { showInfo, showError } from "./notification";
+// Import services needed for context menu actions
+import { startExtractionProcess } from "../services/extractionService";
+// Import navigation service
+import { navigateToFolder } from "../ui/uiManager";
+// Assuming navigationService exists and handles folder navigation
+// 假设 navigationService 存在并处理文件夹导航
+// import { navigateTo } from '../services/navigationService'; 
 
 // Type definitions for callback handlers
 /**
@@ -60,6 +67,155 @@ let currentOnFileClick: FileClickHandler | undefined;
 let currentOnFileDblClick: FileDblClickHandler | undefined;
 
 /**
+ * Reference to the custom context menu element.
+ * 自定义上下文菜单元素的引用。
+ */
+let contextMenuElement: HTMLElement | null = null;
+
+/**
+ * Removes the custom context menu from the DOM.
+ * 从 DOM 中移除自定义上下文菜单。
+ */
+function removeContextMenu(): void {
+  if (contextMenuElement) {
+    contextMenuElement.remove();
+    contextMenuElement = null;
+    // Remove the global click listener used to close the menu
+    // 移除用于关闭菜单的全局点击监听器
+    document.removeEventListener('click', removeContextMenu);
+  }
+}
+
+/**
+ * Shows the custom context menu for a file item.
+ * 显示文件项的自定义上下文菜单。
+ *
+ * @param event - The contextmenu event.
+ *              - contextmenu 事件。
+ * @param file - The file item that was right-clicked.
+ *             - 被右键点击的文件项。
+ */
+function showFileContextMenu(event: MouseEvent, _file: FileItem): void { // _file indicates it might not be the only relevant item
+  removeContextMenu(); 
+  event.preventDefault();
+  event.stopPropagation();
+
+  // Get all currently selected items
+  // 获取所有当前选定的项目
+  const selectedPaths = getSelectedFiles();
+  const selectedItems = currentRenderedFiles.filter(item => selectedPaths.includes(item.name));
+  const numSelected = selectedItems.length;
+
+  if (numSelected === 0) {
+    console.warn("Context menu shown with no selected items? This shouldn't happen.");
+    return; // Don't show menu if nothing is selected
+  }
+
+  console.log(`Context menu requested for ${numSelected} selected item(s). First item: ${selectedItems[0]?.name}`);
+
+  // --- Create Menu Structure ---
+  contextMenuElement = document.createElement('div');
+  contextMenuElement.id = 'custom-context-menu';
+  contextMenuElement.style.position = 'absolute';
+  contextMenuElement.style.left = `${event.clientX}px`;
+  contextMenuElement.style.top = `${event.clientY}px`;
+  contextMenuElement.style.zIndex = '1000';
+
+  const menuList = document.createElement('ul');
+
+  // --- Populate Menu Items --- 
+  if (numSelected === 1) {
+    // Single item selected / 单个项目选中
+    const singleItem = selectedItems[0];
+    if (singleItem.is_dir) {
+      // Single Folder / 单个文件夹
+      menuList.innerHTML = `
+        <li data-action="open-folder">打开</li>
+        <li data-action="extract">提取到...</li>
+        <hr>
+        <li data-action="copy-path">复制路径</li>
+        <li data-action="properties">属性</li>
+      `;
+    } else {
+      // Single File / 单个文件
+      menuList.innerHTML = `
+        <li data-action="extract">提取到...</li>
+        <hr>
+        <li data-action="copy-path">复制路径</li>
+        <li data-action="properties">属性</li>
+      `;
+    }
+  } else {
+    // Multiple items selected / 多个项目选中
+    menuList.innerHTML = `
+      <li data-action="extract">提取 ${numSelected} 项到...</li>
+      <hr>
+      <li data-action="copy-path">复制路径</li>
+      <li data-action="properties">属性</li>
+    `;
+  }
+
+  // --- Add Event Listener for Menu Actions --- 
+  menuList.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'LI' && target.dataset.action) {
+      const action = target.dataset.action;
+      console.log(`Context menu action clicked: ${action}`, selectedPaths);
+      removeContextMenu(); // Close menu after clicking an action
+
+      try {
+          switch (action) {
+            case 'open-folder':
+              if (numSelected === 1 && selectedItems[0].is_dir) {
+                console.log(`打开文件夹: ${selectedItems[0].name}`);
+                // 直接调用导航函数，而不是分发事件
+                navigateToFolder(selectedItems[0].name);
+                console.log('已调用导航函数');
+              } else {
+                console.warn("'打开文件夹'操作在非文件夹或多选状态下被调用");
+              }
+              break;
+            case 'extract':
+              // Trigger the extraction process using extractionService, passing selected paths
+              // 使用 extractionService 触发提取过程，传递选定的路径
+              await startExtractionProcess(selectedPaths);
+              break;
+            case 'copy-path':
+              // TODO: Implement copy path functionality
+              // TODO: 实现复制路径功能
+              const pathsToCopy = selectedPaths.join('\n'); // Join multiple paths with newline
+              // await navigator.clipboard.writeText(pathsToCopy);
+              showInfo('复制路径功能待实现 (Copy Path TBD)');
+              console.log('Paths to copy:', pathsToCopy);
+              break;
+            case 'properties':
+              // TODO: Implement properties dialog/panel
+              // TODO: 实现属性对话框/面板
+              showInfo('属性功能待实现 (Properties TBD)');
+              console.log('Items for properties:', selectedItems);
+              break;
+            default:
+              console.warn(`Unhandled context menu action: ${action}`);
+          }
+      } catch (err) {
+          console.error(`Error executing context menu action '${action}':`, err);
+          showError(`执行操作失败: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+  });
+
+  // Prevent clicks inside the menu from closing it immediately
+  // (Already handled by stopping propagation on the main menu element)
+  // contextMenuElement.addEventListener('click', (e) => e.stopPropagation());
+
+  contextMenuElement.appendChild(menuList);
+  document.body.appendChild(contextMenuElement);
+
+  // Add a global listener to close the menu when clicking outside
+  setTimeout(() => document.addEventListener('click', removeContextMenu), 0);
+}
+
+/**
  * Updates the file list UI with the provided files.
  * Renders files in batches for better performance with large lists.
  * 
@@ -99,9 +255,11 @@ export function updateFileList(
   // This prevents issues if updateFileList is called multiple times with different callbacks
   fileListBody.removeEventListener('click', handleFileListClick);
   fileListBody.removeEventListener('dblclick', handleFileListDblClick);
+  fileListBody.removeEventListener('contextmenu', handleFileListContextMenu); // Remove previous listener if any
 
   fileListBody.addEventListener('click', handleFileListClick);
   fileListBody.addEventListener('dblclick', handleFileListDblClick);
+  fileListBody.addEventListener('contextmenu', handleFileListContextMenu);
 
   const BATCH_SIZE = 100; // Number of items to render per batch
   const RENDER_DELAY = 10; // Delay in ms between batches
@@ -177,6 +335,7 @@ export function updateFileList(
  *              - 鼠标点击事件。
  */
 function handleFileListClick(event: MouseEvent): void {
+  removeContextMenu(); // Close context menu on regular click / 常规点击时关闭上下文菜单
   if (isLoading) return; // Prevent clicks while loading
 
   const target = event.target as HTMLElement;
@@ -250,6 +409,7 @@ function handleFileListClick(event: MouseEvent): void {
  *              - 鼠标双击事件。
  */
 function handleFileListDblClick(event: MouseEvent): void {
+  removeContextMenu(); // Close context menu on double click / 双击时关闭上下文菜单
   if (isLoading) return; // Prevent double-clicks while loading
 
   const target = event.target as HTMLElement;
@@ -281,17 +441,67 @@ function handleFileListDblClick(event: MouseEvent): void {
     // Execute default double-click behavior if the callback didn't prevent it
     if (!defaultBehaviorPrevented) {
         if (file.is_dir) {
-          // If it's a directory, dispatch a navigation event
-          console.log(`Double-click navigation triggered for: ${file.name}`);
-          // Use CustomEvent for decoupling: main.ts listens for this event
-          const navigateEvent = new CustomEvent('navigate-folder', { detail: { path: file.name } });
-          document.dispatchEvent(navigateEvent);
+          // 如果是文件夹，直接调用导航函数
+          console.log(`双击导航触发: ${file.name}`);
+          navigateToFolder(file.name);
+          console.log('已调用导航函数');
         } else {
           // If it's a file, show info (preview not implemented)
           showInfo(`预览功能尚未实现: ${getDisplayName(file, '')}`);
         }
     }
   }
+}
+
+/**
+ * Handles contextmenu events on the file list body (event delegation).
+ * Determines the target file item and shows the custom context menu.
+ *
+ * 处理文件列表主体上的 contextmenu 事件（事件委托）。
+ * 确定目标文件项并显示自定义上下文菜单。
+ *
+ * @param event - The contextmenu mouse event.
+ *              - contextmenu 鼠标事件。
+ */
+function handleFileListContextMenu(event: MouseEvent): void {
+  if (isLoading) return; // Prevent context menu while loading
+
+  const target = event.target as HTMLElement;
+  // Find the closest ancestor with the 'file-item' class
+  const fileItemElement = target.closest<HTMLElement>('.file-item');
+
+  if (fileItemElement) {
+    // Right-clicked on a file item
+    const filePath = fileItemElement.dataset.filename;
+    const fileIndex = parseInt(fileItemElement.dataset.index || '-1', 10);
+
+    if (filePath && fileIndex !== -1) {
+      const file = currentRenderedFiles[fileIndex];
+      if (file) {
+        // TODO: Handle selection properly. If the clicked item is not selected,
+        // maybe select it exclusively before showing the menu? Or handle multi-selection context menus.
+        // TODO: 正确处理选择。如果点击的项目未被选中，
+        // 是否应该在显示菜单前单独选中它？或者处理多选上下文菜单。
+
+        // If the right-clicked item is not part of the current selection,
+        // clear the selection and select only this item.
+        // 如果右键点击的项目不在当前选择中，
+        // 清除选择并仅选中此项目。
+        if (!selectedFiles.has(filePath)) {
+          selectedFiles.clear();
+          selectedFiles.add(filePath);
+          updateSelectionVisuals();
+        }
+
+        showFileContextMenu(event, file);
+        return; // Stop further processing
+      }
+    }
+  }
+
+  // If the click was not on a file item (e.g., empty space), remove any existing menu
+  // 如果点击的不是文件项（例如空白区域），则移除任何现有的菜单
+  removeContextMenu();
 }
 
 /**

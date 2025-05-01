@@ -9,6 +9,7 @@ import {
   loadArchive // Needed for initial load check
 } from "./setup/appSetup";
 import { updateToolbarButtonsState } from "./setup/toolbar"; 
+import { setupWindowControls } from "./setup/windowControls"; 
 
 // UI interaction modules
 import { showHomePage, updateStatusBar } from "./ui/uiManager"; 
@@ -26,9 +27,14 @@ import "./styles/main.css";
  */
 async function initializeApp() {
   console.log("Initializing application...");
+  document.body.classList.add('initializing'); // Ensure initializing class is added at the start
 
   // 1. Load HTML UI component structures
   loadAllComponents();
+
+  // --- Add Titlebar/Window Controls Setup Early ---
+  // Initialize custom titlebar controls early
+  setupWindowControls(); 
 
   // 2. Initialize base services like theme
   initializeTheme();
@@ -36,12 +42,16 @@ async function initializeApp() {
   // 3. Setup all event listeners and connections between components/services
   setupApplicationEventListeners();
 
+  let isLoadingInitialFile = false; // Flag to track if loading from CLI arg
+
   // 4. Handle initial state (check for CLI arg, show home or load archive)
   try {
     console.log("Checking for initial file path from CLI...");
     const initialPath = await invoke<string | null>('get_initial_file_path');
     if (initialPath) {
-      console.log(`Initial file path received: ${initialPath}. Loading archive...`);
+      console.log(`Initial file path received: ${initialPath}. Preparing to load...`);
+      isLoadingInitialFile = true;
+      document.body.classList.add('loading-initial-file'); // Add class to hide home screen via CSS
       await loadArchive(initialPath);
       // loadArchive calls showFileBrowser internally now, which makes content visible.
     } else {
@@ -51,20 +61,26 @@ async function initializeApp() {
       updateStatusBar(); 
     }
   } catch (err) {
-    console.error("Error checking for initial file path:", err);
-    showError(`检查启动参数失败: ${err}`); 
-    showHomePage(); // Fallback to home page
-    updateToolbarButtonsState(false); 
-    updateStatusBar(); 
+    console.error("Error checking for initial file path or loading archive:", err);
+    showError(`处理启动参数或加载初始文件失败: ${err}`); 
+    // Fallback to home page even on initial load error
+    if (!isLoadingInitialFile) {
+        showHomePage();
+        updateToolbarButtonsState(false);
+        updateStatusBar();
+    }
   } finally {
-    // Remove initializing class regardless of outcome
+    // Remove classes regardless of outcome
     document.body.classList.remove('initializing');
-    console.log("Initialization sequence finished, removing initializing class.");
+    if (isLoadingInitialFile) {
+      document.body.classList.remove('loading-initial-file');
+    }
+    console.log("Initialization sequence finished, removing state classes.");
   }
-
-  // Note: The final removal of the initializing class is now in the finally block
-  // console.log("Application initialized."); // Log moved or adapted
 }
 
 // Initialize app when DOM is fully loaded
 window.addEventListener("DOMContentLoaded", initializeApp);
+
+// Disable default context menu / 禁用默认的上下文菜单
+window.addEventListener('contextmenu', (e) => e.preventDefault());

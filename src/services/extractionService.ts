@@ -20,7 +20,7 @@ import {
  * Checks if an archive is open and retrieves selected files for extraction.
  * 检查是否有打开的压缩包，并获取要解压的已选文件。
  */
-export async function startExtractionProcess() {
+export async function startExtractionProcess(filesToExtractOverride?: string[]) {
   console.log("Starting extraction process...");
   const currentArchivePath = getCurrentArchivePath();
   if (!currentArchivePath) {
@@ -28,7 +28,9 @@ export async function startExtractionProcess() {
     return;
   }
 
-  const filesToExtract = getSelectedFiles();
+  // Use override if provided, otherwise get current selection
+  // 如果提供了覆盖值则使用它，否则获取当前选择
+  const filesToExtract = filesToExtractOverride ?? getSelectedFiles();
   const numSelected = filesToExtract.length;
   console.log(`Selected files/folders (${numSelected}):`, filesToExtract);
 

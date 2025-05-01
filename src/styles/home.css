@@ -271,4 +271,9 @@
   .stat-value {
     color: var(--text-color-dark, #eeeeee); /* Adjust stat value color */
   }
+}
+
+/* Hide home section when loading an initial file from CLI */
+body.loading-initial-file #home-section {
+  display: none;
 } 
