@@ -12,24 +12,24 @@
   --primary-hover-color: #106ebe;  /* Primary color on hover - 悬停时的主要颜色 */
   --hover-color: #f0f0f0;          /* Hover state background - 悬停状态背景 */
   --active-color: #e5e5e5;         /* Active state background - 激活状态背景 */
-  --titlebar-height: 38px;         /* Title bar height - 标题栏高度 */
-  --toolbar-height: 88px;          /* Toolbar height - 工具栏高度 */
-  --path-bar-height: 38px;         /* Path bar height - 路径栏高度 */
-  --actions-bar-height: 50px;      /* Actions bar height - 操作栏高度 */
-  --status-bar-height: 24px;       /* Status bar height - 状态栏高度 */
+  --titlebar-height: 38px;           /* Title bar height - 标题栏高度 */
+  --toolbar-height: 88px;            /* Toolbar height - 工具栏高度 */
+  --path-bar-height: 38px;           /* Path bar height - 路径栏高度 */
+  --actions-bar-height: 50px;        /* Actions bar height - 操作栏高度 */
+  --status-bar-height: 24px;         /* Status bar height - 状态栏高度 */
   --shadow-color: rgba(0, 0, 0, 0.08); /* Shadow color - 阴影颜色 */
   --window-control-hover: rgba(0, 0, 0, 0.05); /* Window control hover background - 窗口控制悬停背景 */
   --window-control-active: rgba(0, 0, 0, 0.08); /* Window control active background - 窗口控制激活背景 */
   --close-btn-hover: rgba(232, 17, 35, 0.9); /* Close button hover color - 关闭按钮悬停颜色 */
   --font-family: "Segoe UI", system-ui, sans-serif; /* Font family - 字体族 */
-  --control-border-radius: 4px;    /* Border radius for controls - 控件的边框圆角 */
+  --control-border-radius: 4px;      /* Border radius for controls - 控件的边框圆角 */
   --accent-color: rgba(0, 120, 212, 0.8); /* Accent color - 强调色 */
   --card-bg-color: #ffffff;        /* Card background color - 卡片背景色 */
   --card-hover-color: #f5f5f5;     /* Card hover background color - 卡片悬停背景色 */
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Card shadow - 卡片阴影 */
-  --menu-item-radius: 6px;         /* Menu item border radius - 菜单项边框圆角 */
+  --menu-item-radius: 6px;           /* Menu item border radius - 菜单项边框圆角 */
   --dropdown-bg-color: rgba(255, 255, 255, 0.95); /* Dropdown background color - 下拉菜单背景色 */
-  --scrollbar-track: transparent;  /* Scrollbar track color - 滚动条轨道颜色 */
+  --scrollbar-track: transparent;    /* Scrollbar track color - 滚动条轨道颜色 */
   --scrollbar-thumb: #ccc;         /* Scrollbar thumb color - 滚动条滑块颜色 */
   --scrollbar-thumb-hover: #aaa;   /* Scrollbar thumb hover color - 滚动条滑块悬停颜色 */
   --overlay-color: rgba(0, 0, 0, 0.5); /* Overlay color for modals - 模态框的覆盖层颜色 */

@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
@@ -27,4 +27,26 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
-}));
+  // 4. Explicitly enable build optimizations
+  build: {
+    minify: "terser", // Use terser for better minification
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console logs in production
+        passes: 2, // Run terser multiple times for better optimization
+      },
+    },
+    // Consider chunk size warning limit if needed
+    // chunkSizeWarningLimit: 600,
+    // Enable code splitting if necessary for large apps
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks(id) {
+    //       if (id.includes('node_modules')) {
+    //         return id.toString().split('node_modules/')[1].split('/')[0].toString();
+    //       }
+    //     }
+    //   }
+    // }
+  }
+});

@@ -5,28 +5,66 @@ alwaysApply: true
 ---
 # 项目结构指南
 
-这是一个使用 Tauri 和 Vite 构建的应用程序。
+这是一个使用 Tauri (Rust 后端) 和 Vite (TypeScript 前端) 构建的压缩软件 (对标 7-zip 和 WinRAR)。
 
-## 关键目录和文件
+**核心原则：模块化与关注点分离**
+
+*   **避免臃肿的入口文件**: 严禁将大量业务逻辑、UI 渲染、状态管理等代码堆积在单一的入口文件（如前端的 `src/main.ts` 或 `src/index.html` 内的 `<script>` 标签，后端的 `src-tauri/src/main.rs` 或 `src-tauri/src/lib.rs`）。入口文件应尽可能简洁，主要负责初始化和组装各个模块。
+*   **按功能组织**: 代码应按照其功能职责划分到不同的目录和文件中。
+
+## 关键目录和文件详解
 
 ### 前端 (`src`)
 
-- **入口点**: [src/main.ts](mdc:src/main.ts) 是前端应用程序的主要入口。
-- **用户界面**: [src/ui/](mdc:src/ui) 目录包含 UI 组件。
-- **工具函数**: [src/utils/](mdc:src/utils) 目录包含通用工具函数。
-- **样式**: [src/styles/](mdc:src/styles) 目录包含 CSS 或其他样式文件。
-- **设置**: [src/setup/](mdc:src/setup) 目录可能包含初始化或配置相关的代码。
-- **服务**: [src/services/](mdc:src/services) 目录可能包含与后端或其他外部服务交互的代码。
+*   **入口点**: [src/main.ts](mdc:src/main.ts)
+    *   职责：应用程序启动、初始化核心服务（如主题）、加载 UI 组件、设置事件监听器、处理命令行参数等初始加载逻辑。
+    *   **禁止**: 包含具体的 UI 渲染逻辑、复杂的状态管理、大量的业务逻辑函数。
+*   **用户界面 (`src/ui`)**: 存放所有与用户界面相关的代码。
+    *   `components/`: 可重用的 UI 组件（如按钮、输入框、对话框等）。
+    *   [src/ui/uiManager.ts](mdc:src/ui/uiManager.ts): 负责协调 UI 更新（文件列表、状态栏、导航按钮）、管理页面显示状态（主页/文件浏览器）、处理搜索逻辑、应用程序重置等。
+    *   [src/ui/fileExplorer.ts](mdc:src/ui/fileExplorer.ts): 负责文件列表的具体渲染、DOM 操作、用户交互（单击、双击、多选）、面包屑导航渲染。
+    *   [src/ui/extractDialog.ts](mdc:src/ui/extractDialog.ts): 提取对话框的 UI 逻辑。
+    *   [src/ui/confirmDialog.ts](mdc:src/ui/confirmDialog.ts): 通用确认对话框逻辑。
+    *   [src/ui/notification.ts](mdc:src/ui/notification.ts): 全局通知（信息、成功、错误）的显示逻辑。
+    *   [src/ui/settingsPanel.ts](mdc:src/ui/settingsPanel.ts): 设置面板 UI 逻辑。
+    *   [src/ui/aboutDialog.ts](mdc:src/ui/aboutDialog.ts): 关于对话框 UI 逻辑。
+*   **服务 (`src/services`)**: 包含与后端交互、处理核心业务逻辑或提供特定功能的模块。
+    *   [src/services/appState.ts](mdc:src/services/appState.ts): 集中管理全局应用状态（当前压缩包路径、文件列表缓存、加载状态等）。
+    *   [src/services/fileService.ts](mdc:src/services/fileService.ts): 封装与 Tauri 后端命令 (`commands.rs`) 交互的文件操作（选择、打开、读取列表、解压、获取统计信息等）。定义 `FileItem` 类型。
+    *   [src/services/archiveService.ts](mdc:src/services/archiveService.ts): 负责加载和处理压缩包文件的核心逻辑（打开对话框、调用 `fileService` 打开、处理结果、更新状态）。
+    *   [src/services/extractionService.ts](mdc:src/services/extractionService.ts): 负责处理文件解压的核心逻辑（显示对话框、选择目标、调用 `fileService` 解压、处理结果）。
+    *   [src/services/windowService.ts](mdc:src/services/windowService.ts): 封装窗口相关的操作（设置标题、从路径获取文件名、获取默认解压路径等）。
+    *   [src/services/navigationService.ts](mdc:src/services/navigationService.ts): 管理文件浏览器内的导航历史（前进、后退、跳转、路径标准化）。
+    *   [src/services/themeService.ts](mdc:src/services/themeService.ts): 管理应用主题（加载、切换）。
+*   **设置/初始化 (`src/setup`)**: 包含应用程序启动时的设置代码和事件监听器绑定。
+    *   [src/setup/appSetup.ts](mdc:src/setup/appSetup.ts): 集中调用所有其他的 `setup*` 函数，并注入所需的依赖（回调函数、状态获取函数等）。
+    *   [src/setup/componentLoader.ts](mdc:src/setup/componentLoader.ts): 负责动态加载 HTML 组件模板。
+    *   `home.ts`, `logo.ts`, `menu.ts`, `navigation.ts`, `search.ts`, `settings.ts`, `toolbar.ts`, `windowControls.ts`: 分别负责对应 UI 元素的事件监听器绑定和初始设置。
+*   **工具函数 (`src/utils`)**: 存放通用的、与具体业务无关的辅助函数。
+    *   [src/utils/index.ts](mdc:src/utils/index.ts): 包含各种格式化函数（文件大小、日期等）或其他通用帮助函数。
+*   **样式 (`src/styles`)**: 存放 CSS 或其他样式文件。
+    *   `main.css`: 全局样式。
+    *   `components/`: (可选) 各组件的独立样式。
+*   [vite-env.d.ts](mdc:src/vite-env.d.ts): Vite 环境变量类型定义。
 
 ### 后端 (`src-tauri`)
 
-- **Tauri 配置**: [src-tauri/tauri.conf.json](mdc:src-tauri/tauri.conf.json) 定义了 Tauri 应用程序的行为和特性。
-- **Rust 配置**: [src-tauri/Cargo.toml](mdc:src-tauri/Cargo.toml) 是 Rust 后端项目的配置文件。
-- **后端源码**: [src-tauri/src/](mdc:src-tauri/src) 目录包含 Rust 后端逻辑。
+*   **Tauri 配置**: [src-tauri/tauri.conf.json](mdc:src-tauri/tauri.conf.json): 定义 Tauri 应用行为、特性、允许的 API 等。
+*   **Rust 配置**: [src-tauri/Cargo.toml](mdc:src-tauri/Cargo.toml): Rust 项目依赖和元数据。
+*   **后端源码 (`src-tauri/src`)**:
+    *   `main.rs`: 应用程序入口，主要负责构建和运行 Tauri 应用 (`tauri::Builder`)。
+    *   `lib.rs`: 库入口，定义 `run` 函数，设置 Tauri Builder，注册命令、状态、插件、系统托盘、事件监听器等。
+        *   **禁止**: 包含大量具体的命令实现逻辑。
+    *   `commands.rs`: 包含所有暴露给前端的 `#[tauri::command]` 函数实现（文件操作、窗口操作、状态获取等）。
+    *   `archive_utils.rs`: 包含解压和读取压缩包内容的具体实现逻辑。
+    *   `file_item.rs`: 定义后端使用的 `FileItem` 结构体。
+    *   `logging.rs`: 配置日志记录器。
+    *   `state/` (推荐): 管理 Tauri 的托管状态 (`tauri::State`)，如此项目中的 `CliFilePathState`。
+    *   `error.rs` (推荐): 定义统一的错误类型和 `Result` 别名。
 
 ### 根目录配置
 
-- **Node.js 配置**: [package.json](mdc:package.json) 定义了项目依赖和脚本。
-- **Vite 配置**: [vite.config.ts](mdc:vite.config.ts) 配置了 Vite 构建工具。
-- **TypeScript 配置**: [tsconfig.json](mdc:tsconfig.json) 配置了 TypeScript 编译器选项。
+*   [package.json](mdc:package.json): Node.js 依赖和脚本。
+*   [vite.config.ts](mdc:vite.config.ts): Vite 构建工具配置。
+*   [tsconfig.json](mdc:tsconfig.json): TypeScript 编译器选项。
 

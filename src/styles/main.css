@@ -73,4 +73,24 @@
 
 .logo.typescript:hover {
   filter: drop-shadow(0 0 2em #2d79c7); /* TypeScript logo glow effect - TypeScript标志发光效果 */
-} 
+}
+
+/* Add styles for the initializing state */
+body.initializing #app {
+  /* Optional: Show a simple loading indicator */
+  background-color: var(--background-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* You might want a dedicated loading spinner element */
+}
+
+body.initializing #main-content {
+  display: none; /* Hide main content area during init */
+}
+
+/* You might need to hide specific components if they are outside #main-content */
+/* body.initializing #some-other-element { display: none; } */
+
+/* ... rest of css ... */ 

@@ -1,0 +1,130 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 代码规范指南
+
+本指南旨在统一项目中 TypeScript (前端) 和 Rust (后端) 的代码风格，提高代码的可读性和可维护性。
+
+## 通用规范
+
+*   **语言**: 前端使用 TypeScript，后端使用 Rust。
+*   **格式化**:
+    *   TypeScript: 使用 2 个空格缩进。建议配置 Prettier 并遵循其默认规则。
+    *   Rust: 严格遵循 `rustfmt` 的默认格式化规则。
+*   **文件编码**: 所有文件均使用 UTF-8 编码。
+*   **命名**: 遵循对应语言的惯例。避免使用无意义或过于简短的名称。
+*   **模块化**: 代码应按功能划分到不同的模块/文件中。参考 [项目结构指南](mdc:.cursor/rules/project-structure.mdc)。
+
+## TypeScript (前端 - `src/`)
+
+*   **命名**:
+    *   变量、函数、方法名: `camelCase` (例如 `fileList`, `openArchive`)
+    *   类名、接口名、类型别名、枚举名: `PascalCase` (例如 `FileItem`, `FileClickHandler`)
+    *   常量 (配置或全局不变值): `UPPER_SNAKE_CASE` (例如 `BATCH_SIZE`)
+*   **类型**:
+    *   优先使用 `interface` 定义对象结构，使用 `type` 定义函数签名、联合类型或工具类型。
+    *   为所有函数参数和返回值添加明确的类型注解。
+    *   利用 TypeScript 的类型推断，但关键地方应显式声明。
+*   **模块导入**:
+    *   使用 ES Modules (`import`/`export`)。
+    *   导入顺序：第三方库 -> 项目内部服务/工具 -> UI 组件 -> 样式。
+    *   相对路径导入优先使用 `@/` 别名（如果已配置）或清晰的相对路径。
+*   **注释**: (见下方 **注释规范**)
+*   **错误处理**:
+    *   使用 `try...catch` 捕获异步操作或可能抛出错误的代码块。
+    *   使用 `console.error` 记录详细错误信息。
+    *   面向用户的错误应通过 UI 通知（如 `showError`）友好地展示。
+*   **异步**:
+    *   优先使用 `async/await` 处理 Promise。
+
+## Rust (后端 - `src-tauri/src/`)
+
+*   **命名**:
+    *   变量、函数名、模块名: `snake_case` (例如 `file_path`, `open_archive`)
+    *   结构体 (Structs)、枚举 (Enums)、特征 (Traits)、类型别名: `PascalCase` (例如 `CliFilePathState`, `FileItem`)
+    *   常量: `UPPER_SNAKE_CASE` (例如 `MAX_RETRIES`)
+*   **格式化**: 运行 `cargo fmt` 确保代码格式符合规范。
+*   **模块化**: 使用 `mod` 关键字组织代码到不同文件和模块中。
+*   **错误处理**:
+    *   优先使用 `Result<T, E>` 处理可能失败的操作。定义清晰的错误类型 (`enum Error { ... }`)。
+    *   避免过度使用 `.unwrap()` 或 `.expect()`，除非能明确保证操作不会失败（例如 Mutex 初始化后）。在 `main` 函数或应用顶层可以使用 `.expect()` 处理致命错误。
+    *   使用 `?` 操作符简化错误传递。
+*   **注释**: (见下方 **注释规范**)
+*   **Clippy**: 定期运行 `cargo clippy` 并修复其提出的建议。
+
+## 注释规范 (TypeScript & Rust)
+
+编写注释的最终目标是帮助他人（以及未来的你）快速理解代码背后的逻辑和意图。
+
+*   **核心原则：解释"为什么"(Why)，而非"做什么"(What)**
+    *   代码本身应尽可能清晰地描述其 *执行的操作* (What)。
+    *   注释应该聚焦于代码 *如此编写的原因* (Why)。这包括：
+        *   设计决策及其背后的权衡。
+        *   特定算法的选择理由。
+        *   对复杂业务逻辑的解释。
+        *   非显而易见的前提条件或假设。
+        *   针对特定问题的变通方法 (Workaround) 及其背景。
+
+*   **何时必须添加注释**
+    *   **公共 API**: 所有导出的函数、类、结构体、接口、类型、枚举、常量和模块都 **必须** 拥有文档注释 (TypeScript: TSDoc `/** ... */`, Rust: `///`)。文档注释应清晰说明其用途、参数、返回值以及可能抛出的异常或错误。
+    *   **复杂或非直观的逻辑**: 对于任何不是一目了然的代码段，都需要注释来阐明其工作方式或目的。这可能包括复杂的算法、精巧的优化、位操作、正则表达式等。
+    *   **重要的设计决策**: 当有多种实现方式时，注释应解释为什么选择了当前这种方式，以及放弃了哪些其他选项。
+    *   **Workarounds 和 Hacks**: 如果代码包含针对特定 bug、环境限制或第三方库问题的临时解决方案，必须注释说明原因、影响范围以及理想的解决方案（如果可能）。
+    *   **标记**: 使用 `TODO`, `FIXME`, `NOTE`, `HACK` 等标准化标记：
+        *   `TODO`: 描述需要实现的功能或待办事项。
+        *   `FIXME`: 指出已知的问题或需要修复的 bug。
+        *   `NOTE`: 提供需要注意的额外信息或解释。
+        *   `HACK`: 标记一个临时的、可能不够优雅但有效的解决方案。
+
+*   **注释风格与格式**
+    *   **简洁、清晰、准确**: 使用专业且无歧义的语言。避免口语化或含糊不清的表达。
+    *   **中英双语 (强制要求)**:
+        *   **本项目所有重要注释（尤其是文档注释、复杂逻辑解释、设计决策说明）必须同时提供英文和简体中文版本。**
+        *   推荐格式：英文在前，中文另起一行紧跟其后。对于较短的注释（如参数说明），可以在同一行用分隔符 `/` 分隔。
+        *   这样做是为了方便不同语言背景的开发者协作和理解。
+        ```typescript
+        /**
+         * Calculates the optimal batch size based on available memory.
+         * 根据可用内存计算最佳批处理大小。
+         *
+         * This uses a heuristic approach considering typical file sizes.
+         * 这里使用了一种考虑了典型文件大小的启发式方法。
+         *
+         * @param availableMemoryMB - Available memory in Megabytes.
+         *                          - 可用内存 (MB)。
+         * @returns - The recommended batch size (number of items).
+         *          - 推荐的批处理大小（项目数量）。
+         */
+        function calculateBatchSize(availableMemoryMB: number): number { /* ... */ }
+        ```
+        ```rust
+        /// Attempts to acquire a lock with a timeout.
+        /// 尝试在超时时间内获取锁。
+        ///
+        /// Returns Ok(guard) if successful, or Err if the lock is poisoned or timeout occurs.
+        /// 如果成功则返回 Ok(guard)，如果锁中毒或超时则返回 Err。
+        fn try_lock_with_timeout(&self, duration: Duration) -> Result<MutexGuard<T>, LockError> {
+            // ...
+        }
+        ```
+    *   **与代码同步**: **极其重要！** 修改代码时，必须同步更新相关注释。过时或错误的注释比没有注释更具误导性，危害更大。
+
+*   **应避免的注释**
+    *   **复述显而易见的代码**: 不要为那些简单明了、可以通过阅读代码本身就能理解的操作添加注释。例如： `// Increment counter / 计数器加一`。
+    *   **误导性或错误的注释**: 确保注释准确反映代码的当前行为。
+    *   **大段被注释掉的代码**: 如果一段代码不再需要，请使用版本控制系统（如 Git）来管理历史记录，而不是将其注释掉留在代码库中。这会干扰代码阅读和搜索。
+    *   **日志式注释**: 不要用注释记录文件的修改历史（例如 `// 2023-10-27 Added feature X`）。版本控制系统是做这个的。
+    *   **过度注释**: 并非每一行都需要注释。良好的代码结构和命名可以减少对注释的依赖。
+
+遵循这些注释规范，有助于创建更易于理解、维护和协作的代码库。
+
+通过遵循这些规范，我们可以保持代码库的一致性、可读性和易于维护性。
+
+
+
+
+
+
+

@@ -4,6 +4,16 @@
  */
 
 /**
+ * Target the main home section container itself
+ * 针对主页部分容器本身
+ */
+#home-section {
+  background-color: var(--bg-color); /* Ensure consistent background - 确保背景一致 */
+  flex: 1; /* Ensure it fills space if needed - 确保在需要时填充空间 */
+  display: flex; /* Ensure flex properties work for children - 确保弹性属性对其子元素有效 */
+}
+
+/**
  * Main home container - Flexible container for home content
  * 主页容器 - 主页内容的灵活容器
  */
@@ -75,7 +85,7 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 16px;
-  color: #444; /* Consider using var(--text-color) or a secondary text color variable - 考虑使用var(--text-color)或次要文本颜色变量 */
+  color: var(--text-secondary-color); /* Use a secondary text color variable */
 }
 
 /**
@@ -133,6 +143,7 @@
 .home-action-btn span {
   font-size: 14px;
   font-weight: 500;
+  color: var(--text-color);
 }
 
 /**
@@ -237,4 +248,27 @@
   font-size: 20px;
   font-weight: 600;
   color: #333; /* Consider using var(--text-color) - 考虑使用var(--text-color) */
+}
+
+/* Dark Mode Overrides for Home Page */
+[data-theme="dark"] {
+  .home-action-btn span {
+    color: var(--text-color-dark, #f0f0f0); /* Lighter text for buttons in dark mode */
+  }
+
+  .action-group h2 {
+    color: var(--text-secondary-color-dark, #cccccc); /* Slightly brighter title text in dark mode */
+  }
+
+  .no-files-message {
+    color: var(--text-secondary-color-dark, #999999); /* Adjust empty state color for dark mode */
+  }
+
+  .stat-title {
+    color: var(--text-secondary-color-dark, #aaaaaa); /* Adjust stat title color */
+  }
+
+  .stat-value {
+    color: var(--text-color-dark, #eeeeee); /* Adjust stat value color */
+  }
 } 

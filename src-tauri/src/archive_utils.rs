@@ -248,7 +248,7 @@ pub fn parse_7z_list_output(output_str: &str) -> Vec<FileItem> {
             // An empty line signifies the end of a properties block for an item
             // Determine file type based on extension or if it's a directory
             let type_name = if is_dir {
-                "Folder".to_string() // Use "Folder" for consistency
+                "文件夹".to_string() // Use "Folder" for consistency
             } else if let Some(ext) = Path::new(&path_str).extension().and_then(|os| os.to_str()) {
                  match ext.to_lowercase().as_str() {
                     "txt" => "文本文档".to_string(),
